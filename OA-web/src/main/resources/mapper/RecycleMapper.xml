@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.oadocument.mapper.RecycleMapper">
+    <select id="selectRecDoc" resultMap="document">
+        SELECT document.*,
+               recycle.user_id del_id,
+               user_info.NAME  del_name,
+               recycle.delete_time
+        FROM `document`,
+             recycle,
+             user_info
+        WHERE document.id = recycle.id
+          AND user_info.NAME IN (SELECT user_info.NAME FROM user_info WHERE user_info.id = recycle.user_id)
+          AND document.dept_id = #{deptId};
+    </select>
+    <select id="selectTimeOutIds" resultType="Long">
+        SELECT recycle.id
+        FROM recycle
+        WHERE DATEDIFF(NOW(), recycle.delete_time) >= 30;
+    </select>
+    <resultMap id="document" type="com.ctgu.oacommon.vo.RecycleVO">
+        <result column="id" property="id"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="del_id" property="deleteId"/>
+        <result column="del_name" property="dName"/>
+        <result column="name" property="name"/>
+        <result column="extension" property="extension"/>
+        <result column="type" property="type"/>
+        <result column="file_path" property="filePath"/>
+        <result column="size" property="size"/>
+        <result column="delete_time" property="deleteTime"/>
+    </resultMap>
+</mapper>

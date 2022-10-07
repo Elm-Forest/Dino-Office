@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.oadepartment.mapper.EmployeeMapper">
+
+    <select id="selectEmployee" resultMap="employee">
+        SELECT `user_info`.*,
+        USER.role,
+        USER.rights,
+        `user_info`.status
+        FROM `user_info`,
+        USER
+        WHERE USER.id = `user_info`.id
+        AND `user_info`.dept_id = #{deptId}
+        <if test="status !=null">
+            AND `user_info`.STATUS = #{status}
+        </if>
+        <if test="name !=null and name !=''">
+            AND user_info.NAME LIKE concat('%', #{name}, '%')
+        </if>
+        <if test="role !=null">
+            AND USER.role = #{role}
+        </if>
+        <if test="rights !=null">
+            AND USER.rights = #{rights}
+        </if>
+    </select>
+    <resultMap id="employee" type="com.ctgu.oacommon.vo.EmployeeVO">
+        <id column="id" property="id"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="name" property="name"/>
+        <result column="sex" property="sex"/>
+        <result column="address" property="address"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="role" property="role"/>
+        <result column="rights" property="rights"/>
+        <result column="status" property="status"/>
+    </resultMap>
+</mapper>
