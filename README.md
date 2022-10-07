@@ -1,5 +1,9 @@
 # AutoOffice
 ## OA办公自动化
+<div>
+	<img src="https://user-images.githubusercontent.com/62285254/194511551-cf11073e-a207-459b-a5d3-77a0a0044834.png" width="30%">
+</div>
+
 
 #### 需求分析
 
@@ -60,7 +64,7 @@ CEO
 
 ##### 5）用户管理平台
 > 个人账户管理\
-个人信息管理\
+个人信息管理
 
 用户可以管理自己的账户信息包含更改密码和邮箱；\
 用户可以管理自己的详细信息；\
@@ -68,7 +72,7 @@ CEO
 
 ##### 6）企业管理平台
 > 企业信息管理\
-员工管理\
+员工管理
 
 此模块面向组织权限大于等于2以上的用户开发，即部门管理员以上；\
 管理者可以查看部门或企业的员工信息；\
@@ -77,8 +81,31 @@ CEO
 管理者可接收offer并同意或拒绝offer。
 
 #### 软件架构
-软件架构说明
+<div>
+	<img src="https://user-images.githubusercontent.com/62285254/194513343-992d5161-84f6-420f-9a90-d133904b89d6.png" width="50%">
+</div>
 
+
+#### 安全框架设计
+
+<div>
+	<img src="https://user-images.githubusercontent.com/62285254/194514040-7300c202-437a-4455-bad8-77a72adb1139.png" width="50%">
+</div>
+
+#### 业务与角色
+<div>
+	<img src="https://user-images.githubusercontent.com/62285254/194514461-e4176437-f9a2-4d02-8828-87ddeae4d6be.png" width="30%">
+</div>
+
+<div>
+	<img src="https://user-images.githubusercontent.com/62285254/194514418-a1dfc910-ff9d-4e04-a875-7276a03c05e0.png" width="30%">
+</div>
+
+#### 数据库设计
+
+<div>
+	<img src="https://user-images.githubusercontent.com/62285254/194514344-342471e1-6c9f-4d7a-a6ce-059eb9c95a5a.png" width="50%">
+</div>
 
 #### 安装教程
 
