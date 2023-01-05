@@ -106,10 +106,8 @@ spring:
     host: smtp.qq.com
     # 你的邮箱地址
     username:
-    #username: timbrightland@163.com
     # 授权码
     password:
-    #password: FNQWXOMWTYLGRDVC
     port: 465
     # 编码格式
     default-encoding: utf-8
