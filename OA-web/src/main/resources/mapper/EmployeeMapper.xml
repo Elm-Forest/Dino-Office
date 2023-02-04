@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ctgu.oadepartment.mapper.EmployeeMapper">
+<mapper namespace="com.ctgu.common.dao.user.UserInfoMapper">
 
     <select id="selectEmployee" resultMap="employee">
         SELECT `user_info`.*,
@@ -26,7 +26,7 @@
             AND USER.rights = #{rights}
         </if>
     </select>
-    <resultMap id="employee" type="com.ctgu.oacommon.vo.EmployeeVO">
+    <resultMap id="employee" type="com.ctgu.common.models.vo.EmployeeVO">
         <id column="id" property="id"/>
         <result column="dept_id" property="deptId"/>
         <result column="name" property="name"/>

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ctgu.oadocument.mapper.RecycleMapper">
+<mapper namespace="com.ctgu.common.dao.document.RecycleMapper">
     <select id="selectRecDoc" resultMap="document">
         SELECT document.*,
                recycle.user_id del_id,
@@ -20,7 +20,7 @@
         FROM recycle
         WHERE DATEDIFF(NOW(), recycle.delete_time) >= 30;
     </select>
-    <resultMap id="document" type="com.ctgu.oacommon.vo.RecycleVO">
+    <resultMap id="document" type="com.ctgu.common.models.vo.RecycleVO">
         <result column="id" property="id"/>
         <result column="dept_id" property="deptId"/>
         <result column="del_id" property="deleteId"/>

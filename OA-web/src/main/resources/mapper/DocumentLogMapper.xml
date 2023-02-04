@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ctgu.oadocument.mapper.DocumentLogMapper">
+<mapper namespace="com.ctgu.common.dao.document.DocumentLogMapper">
     <select id="selectDocumentLog" resultMap="document">
         SELECT distinct document.*,
         user_info.NAME u_name,
@@ -28,7 +28,7 @@
             AND document_log.operation_time BETWEEN #{beginTime} AND #{endTime}
         </if>
     </select>
-    <resultMap id="document" type="com.ctgu.oacommon.vo.DocLogVO">
+    <resultMap id="document" type="com.ctgu.common.models.vo.DocLogVO">
         <id column="id" property="id"/>
         <result column="u_name" property="modifyName"/>
         <result column="name" property="name"/>

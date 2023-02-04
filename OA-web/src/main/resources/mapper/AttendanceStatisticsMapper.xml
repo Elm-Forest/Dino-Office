@@ -2,5 +2,5 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ctgu.oacheckingin.mapper.AttendanceStatisticsMapper">
+<mapper namespace="com.ctgu.common.dao.checking.AttendanceStatisticsMapper">
 </mapper>
