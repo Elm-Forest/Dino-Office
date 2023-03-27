@@ -6,7 +6,7 @@
 
 ### 项目介绍
 
-<img src="https://github.com/Elm-Forest/AutoOffice/blob/master/.github/imgs/introduce.png?raw=true" width="35%" alt="" style="display: inline-block">
+<img src="https://github.com/Elm-Forest/AutoOffice/blob/master/.github/imgs/introduce.png?raw=true" width="75%" alt="" style="display: inline-block">
 
 ### 技术栈
 
