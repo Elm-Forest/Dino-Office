@@ -81,7 +81,7 @@ public class Email implements Serializable {
      * 发送者用户名
      */
     @TableField(exist = false)
-    private String sendUserName;
+    private String sendName;
     /**
      * 接收者用户名
      */

@@ -58,12 +58,6 @@ public class UserInfo implements Serializable {
     private String phone;
 
     /**
-     * 联系邮箱
-     */
-    @TableField(value = "email")
-    private String email;
-
-    /**
      * 入职状态;
      * 0:未入职;
      * 1:在职;

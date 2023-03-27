@@ -27,6 +27,9 @@ public class MailServiceImpl implements MailService {
     @Value("${spring.mail.username}")
     private String hostMail;
 
+    @Resource
+    private Send send;
+
     @Override
     public void sendMail(EmailBO emailBO) throws MessagingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -35,7 +38,7 @@ public class MailServiceImpl implements MailService {
         helper.setText(emailBO.getContent(), true);
         helper.setTo(emailBO.getEmail());
         helper.setFrom(hostMail);
-        new Send().send(mailSender, mimeMessage);
+        send.sendAsync(mailSender, mimeMessage);
         log.info("正在发送邮件至" + emailBO.getEmail());
     }
 }

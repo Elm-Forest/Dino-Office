@@ -13,7 +13,7 @@ public class EmailAccountConst {
 
     public static final Integer MAIL_SERVER_PORT_QQ = 465;
 
-    public static final String MAIL_SERVER_PROTOCOL_QQ = "smtp";
+    public static final String MAIL_SERVER_PROTOCOL_QQ = "smtps";
 
     public static final Integer MAIL_SERVER_163 = 2;
 

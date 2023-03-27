@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
@@ -20,14 +21,17 @@ import java.util.Properties;
 @Service
 public class MailClientServiceImpl implements MailClientService {
 
+    @Resource
+    private Send send;
+
     @Override
-    public void smtpMail(EmailAccountBO emailAccountDTO, EmailBO emailDTO) throws MessagingException {
+    public void smtpMail(EmailAccountBO emailAccountBO, EmailBO emailBO) throws MessagingException {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setPassword(emailAccountDTO.getPassword());
-        mailSender.setUsername(emailAccountDTO.getEmail());
-        mailSender.setHost(emailAccountDTO.getHost());
-        mailSender.setPort(emailAccountDTO.getPort());
-        mailSender.setProtocol(emailAccountDTO.getProtocol());
+        mailSender.setPassword(emailAccountBO.getPassword());
+        mailSender.setUsername(emailAccountBO.getEmail());
+        mailSender.setHost(emailAccountBO.getHost());
+        mailSender.setPort(emailAccountBO.getPort());
+        mailSender.setProtocol(emailAccountBO.getProtocol());
         mailSender.setDefaultEncoding("utf-8");
         Properties p = new Properties();
         p.setProperty("mail.smtp.auth", "true");
@@ -36,11 +40,11 @@ public class MailClientServiceImpl implements MailClientService {
         mailSender.setJavaMailProperties(p);
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-        helper.setSubject(emailDTO.getSubject());
-        helper.setText(emailDTO.getContent(), true);
-        helper.setTo(emailDTO.getEmail());
-        helper.setFrom(emailAccountDTO.getEmail());
-        new Send().send(mailSender, mimeMessage);
-        log.info(emailAccountDTO.getEmail() + "正在发送邮件至" + emailDTO.getEmail());
+        helper.setSubject(emailBO.getSubject());
+        helper.setText(emailBO.getContent(), true);
+        helper.setTo(emailBO.getEmail());
+        helper.setFrom(emailAccountBO.getEmail());
+        log.info(emailAccountBO.getEmail() + "正在发送邮件至" + emailBO.getEmail());
+        send.sendSync(mailSender, mimeMessage);
     }
 }

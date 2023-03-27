@@ -1,4 +1,4 @@
-package com.ctgu.common.models.vo;
+package com.ctgu.common.models.dto;
 
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 /**
+ * 回收站
+ *
  * @author Zhang Jinming
  * @date 18/8/2022 下午5:27
  */
@@ -17,14 +19,14 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @ApiModel(description = "回收站")
-public class RecycleVO {
+public class RecycleDTO {
     private Long id;
 
     private Long deptId;
 
     private Long deleteId;
 
-    private Long dName;
+    private String delName;
 
     private String name;
 

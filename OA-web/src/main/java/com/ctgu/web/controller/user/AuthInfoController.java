@@ -40,8 +40,20 @@ public class AuthInfoController {
     }
 
     @PostMapping("/email/password")
-    public Result<?> sendCode(String email) {
-        userService.sendCode(email);
+    public Result<?> sendPasswordCode(String email) {
+        userService.sendPasswordCode(email);
+        return Result.ok();
+    }
+
+    @PutMapping("/user/email")
+    public Result<?> updateEmail(@RequestParam("email") String email,
+                                 @RequestParam("code") String code) {
+        return userService.updateEmail(email, code);
+    }
+
+    @PostMapping("/user/email/code")
+    public Result<?> sendEmailCode(String email) {
+        userService.sendEmailCode(email);
         return Result.ok();
     }
 }

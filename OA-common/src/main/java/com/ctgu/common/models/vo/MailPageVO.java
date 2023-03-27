@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @ApiModel(description = "邮件正文主体")
 public class MailPageVO {
-    private String emailAddress;
+    private Long id;
     private Long auId;
     private String subject;
     private String content;

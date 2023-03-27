@@ -6,10 +6,10 @@ import com.ctgu.common.dao.user.UserInfoMapper;
 import com.ctgu.common.dao.user.UserMapper;
 import com.ctgu.common.entity.User;
 import com.ctgu.common.entity.UserInfo;
+import com.ctgu.common.models.dto.EmployeeDTO;
 import com.ctgu.common.models.dto.PageResult;
 import com.ctgu.common.models.dto.Result;
 import com.ctgu.common.models.vo.EmployeeConditionVO;
-import com.ctgu.common.models.vo.EmployeeVO;
 import com.ctgu.common.utils.ThreadHolder;
 import com.ctgu.department.service.EmployeeManagementService;
 import org.springframework.stereotype.Service;
@@ -39,7 +39,7 @@ public class EmployeeManagementServiceImpl implements EmployeeManagementService 
                 .select(UserInfo::getDeptId).eq(UserInfo::getId, id)).getDeptId();
         int currentPage = employeeConditionVO.getCurrent();
         int size = employeeConditionVO.getSize();
-        Page<EmployeeVO> page = new Page<>(currentPage, size);
+        Page<EmployeeDTO> page = new Page<>(currentPage, size);
         employeeMapper.selectEmployee(page,
                 deptId,
                 employeeConditionVO.getStatus(),
@@ -58,7 +58,7 @@ public class EmployeeManagementServiceImpl implements EmployeeManagementService 
                 .select(UserInfo::getDeptId).eq(UserInfo::getId, id)).getDeptId();
         int currentPage = employeeConditionVO.getCurrent();
         int size = employeeConditionVO.getSize();
-        Page<EmployeeVO> page = new Page<>(currentPage, size);
+        Page<EmployeeDTO> page = new Page<>(currentPage, size);
         employeeMapper.selectEmployee(page,
                 deptId,
                 employeeConditionVO.getStatus(),

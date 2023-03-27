@@ -12,13 +12,18 @@ import com.ctgu.common.entity.Document;
 import com.ctgu.common.entity.DocumentLog;
 import com.ctgu.common.entity.Recycle;
 import com.ctgu.common.entity.UserInfo;
+import com.ctgu.common.exception.BizException;
 import com.ctgu.common.models.dto.DocumentDTO;
 import com.ctgu.common.models.dto.PageResult;
 import com.ctgu.common.models.dto.Result;
+import com.ctgu.common.models.vo.DocRenameVO;
 import com.ctgu.common.models.vo.DocumentConditionVO;
+import com.ctgu.common.utils.Assert;
+import com.ctgu.common.utils.CommonUtils;
 import com.ctgu.common.utils.ThreadHolder;
 import com.ctgu.document.service.DocumentService;
 import com.ctgu.oss.service.UploadService;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,13 +52,14 @@ public class DocumentServiceImpl implements DocumentService {
     private DocumentLogMapper documentLogMapper;
 
     @Resource
-    private RecycleMapper recyclerMapper;
+    private RecycleMapper recycleMapper;
 
     @Override
     public Result<?> selectDocument(String filePath) {
         Long id = ThreadHolder.getCurrentUser().getId();
         Long deptId = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
-                .select(UserInfo::getDeptId).eq(UserInfo::getId, id)).getDeptId();
+                .select(UserInfo::getDeptId)
+                .eq(UserInfo::getId, id)).getDeptId();
         List<DocumentDTO> documents = documentMapper.selectDocument(deptId, filePath);
         return Result.ok(documents);
     }
@@ -64,7 +70,8 @@ public class DocumentServiceImpl implements DocumentService {
         String name = multipartFile.getOriginalFilename();
         Long id = ThreadHolder.getCurrentUser().getId();
         Long deptId = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
-                .select(UserInfo::getDeptId).eq(UserInfo::getId, id)).getDeptId();
+                .select(UserInfo::getDeptId)
+                .eq(UserInfo::getId, id)).getDeptId();
         String urlPath = FILE_MANAGER + deptId + filePath;
         String url = uploadService.uploadFile(multipartFile, urlPath);
         Document document = Document.builder()
@@ -99,24 +106,28 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Result<?> reNameDocument(Long docId, String reName, Integer type) {
+    public Result<?> renameDocument(DocRenameVO docRenameVO) {
+        if (docRenameVO.getType() == TYPE_FOLDER) {
+            throw new NotImplementedException("暂时无法对文件夹重新命名");
+        }
         Long id = ThreadHolder.getCurrentUser().getId();
         Long deptId = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
-                .select(UserInfo::getDeptId).eq(UserInfo::getId, id)).getDeptId();
-        Document build = Document.builder()
-                .name(reName)
+                .select(UserInfo::getDeptId)
+                .eq(UserInfo::getId, id)).getDeptId();
+        Document document = Document.builder()
+                .name(docRenameVO.getRename())
                 .modifyId(id)
                 .modifyTime(DateUtil.date())
                 .build();
-        if (type == TYPE_FILE) {
-            build.setExtension(FileNameUtil.extName(reName));
+        if (docRenameVO.getType() == TYPE_FILE) {
+            document.setExtension(FileNameUtil.extName(docRenameVO.getRename()));
         }
-        int update = documentMapper.update(build,
+        int update = documentMapper.update(document,
                 new LambdaQueryWrapper<Document>()
-                        .eq(Document::getId, docId));
+                        .eq(Document::getId, docRenameVO.getDocId()));
         int insert = documentLogMapper.insert(DocumentLog.builder()
                 .userId(id)
-                .documentId(docId)
+                .documentId(docRenameVO.getDocId())
                 .deptId(deptId)
                 .operation(OPERATION_MODIFY)
                 .operationTime(DateUtil.date())
@@ -132,7 +143,8 @@ public class DocumentServiceImpl implements DocumentService {
     public Result<?> createFolder(String filePath, String name) {
         Long id = ThreadHolder.getCurrentUser().getId();
         Long deptId = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
-                .select(UserInfo::getDeptId).eq(UserInfo::getId, id)).getDeptId();
+                .select(UserInfo::getDeptId)
+                .eq(UserInfo::getId, id)).getDeptId();
         Document document = Document.builder()
                 .filePath(filePath)
                 .url(null)
@@ -168,10 +180,12 @@ public class DocumentServiceImpl implements DocumentService {
     public Result<?> deleteDocument(Long docId) {
         Long id = ThreadHolder.getCurrentUser().getId();
         Long deptId = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
-                .select(UserInfo::getDeptId).eq(UserInfo::getId, id)).getDeptId();
-        int insert = recyclerMapper.insert(Recycle.builder()
+                .select(UserInfo::getDeptId)
+                .eq(UserInfo::getId, id)).getDeptId();
+        int insert = recycleMapper.insert(Recycle.builder()
                 .id(docId)
                 .userId(id)
+                .status(FILE_STATUS_LIVE)
                 .deleteTime(DateUtil.date())
                 .build());
         if (insert <= 0) {
@@ -197,7 +211,8 @@ public class DocumentServiceImpl implements DocumentService {
         String filePath = document.getFilePath() + document.getName() + "/";
         Long id = ThreadHolder.getCurrentUser().getId();
         Long deptId = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
-                .select(UserInfo::getDeptId).eq(UserInfo::getId, id)).getDeptId();
+                .select(UserInfo::getDeptId)
+                .eq(UserInfo::getId, id)).getDeptId();
         deleteDocument(docId);
         for (Long ids : documentMapper.selectDocumentId(deptId, filePath)) {
             if (documentMapper.selectById(ids).getType() == TYPE_FOLDER) {
@@ -209,19 +224,67 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Result<?> selectDocumentCondition(DocumentConditionVO docLogConditionVO) {
+    public Result<?> selectDocumentCondition(DocumentConditionVO documentConditionVO) {
+        Assert.stringNotEmpty(documentConditionVO.getPath(), new BizException("路径不能为空"));
         Long id = ThreadHolder.getCurrentUser().getId();
         Long deptId = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
-                .select(UserInfo::getDeptId).eq(UserInfo::getId, id)).getDeptId();
-        int currentPage = docLogConditionVO.getCurrent();
-        int size = docLogConditionVO.getSize();
+                .select(UserInfo::getDeptId)
+                .eq(UserInfo::getId, id)).getDeptId();
+        int currentPage = documentConditionVO.getCurrent();
+        int size = documentConditionVO.getSize();
+        String endTime = documentConditionVO.getEndTime();
+        endTime = CommonUtils.dateMoveOneDay(endTime);
         Page<DocumentDTO> page = new Page<>(currentPage, size);
         documentMapper.selectDocumentCondition(page, deptId,
-                docLogConditionVO.getUName(),
-                docLogConditionVO.getDName(),
-                docLogConditionVO.getBeginTime(),
-                docLogConditionVO.getEndTime());
+                documentConditionVO.getPath(),
+                documentConditionVO.getUName(),
+                documentConditionVO.getDName(),
+                documentConditionVO.getBeginTime(),
+                endTime);
         PageResult<?> docLists = new PageResult<>(page.getRecords(), (int) page.getTotal());
         return Result.ok(docLists);
+    }
+
+    @Override
+    public Result<?> downloadFile(Long docId) {
+        Long id = ThreadHolder.getCurrentUser().getId();
+        Long deptId = userInfoMapper.selectById(id).getDeptId();
+        Document document = documentMapper.selectById(docId);
+        if (!deptId.equals(document.getDeptId())) {
+            throw new BizException("无权下载");
+        }
+        documentLogMapper.insert(DocumentLog.builder()
+                .userId(id)
+                .documentId(docId)
+                .deptId(deptId)
+                .operation(OPERATION_SELECT)
+                .operationTime(DateUtil.date())
+                .build());
+        return Result.ok(document.getUrl());
+    }
+
+    @Override
+    public Result<?> selectFolderSize(Long docId) {
+        Long deptId = userInfoMapper.selectOne(new LambdaQueryWrapper<UserInfo>()
+                .select(UserInfo::getDeptId)
+                .eq(UserInfo::getId, ThreadHolder.getCurrentUser().getId())).getDeptId();
+        Long size = 0L;
+        size = computeFolderSizeCore(docId, deptId, size);
+        return Result.ok(size);
+    }
+
+    private Long computeFolderSizeCore(Long docId, Long deptId, Long size) {
+        Document document = documentMapper.selectById(docId);
+        String filePath = document.getFilePath() + document.getName() + "/";
+        List<Long> ids = documentMapper.selectAvailableDocumentsId(deptId, filePath);
+        for (Long id : ids) {
+            Document doc = documentMapper.selectById(id);
+            if (doc.getType() == TYPE_FOLDER) {
+                size = computeFolderSizeCore(id, deptId, size);
+            } else {
+                size += doc.getSize();
+            }
+        }
+        return size;
     }
 }

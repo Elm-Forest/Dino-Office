@@ -4,27 +4,30 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ctgu.common.dao.document.RecycleMapper">
     <select id="selectRecDoc" resultMap="document">
-        SELECT document.*,
-               recycle.user_id del_id,
-               user_info.NAME  del_name,
-               recycle.delete_time
+        SELECT distinct document.*,
+                        recycle.user_id del_id,
+                        user_info.NAME  del_name,
+                        recycle.delete_time
         FROM `document`,
              recycle,
              user_info
         WHERE document.id = recycle.id
-          AND user_info.NAME IN (SELECT user_info.NAME FROM user_info WHERE user_info.id = recycle.user_id)
-          AND document.dept_id = #{deptId};
+          AND user_info.NAME IN
+              (SELECT user_info.NAME FROM user_info WHERE user_info.id = recycle.user_id)
+          AND recycle.status = 1
+          AND document.dept_id = #{deptId}
+        order by document.type desc, recycle.delete_time desc;
     </select>
-    <select id="selectTimeOutIds" resultType="Long">
+    <select id="selectTimeOutIds" resultType="java.lang.Long">
         SELECT recycle.id
         FROM recycle
         WHERE DATEDIFF(NOW(), recycle.delete_time) >= 30;
     </select>
-    <resultMap id="document" type="com.ctgu.common.models.vo.RecycleVO">
+    <resultMap id="document" type="com.ctgu.common.models.dto.RecycleDTO">
         <result column="id" property="id"/>
         <result column="dept_id" property="deptId"/>
         <result column="del_id" property="deleteId"/>
-        <result column="del_name" property="dName"/>
+        <result column="del_name" property="delName"/>
         <result column="name" property="name"/>
         <result column="extension" property="extension"/>
         <result column="type" property="type"/>

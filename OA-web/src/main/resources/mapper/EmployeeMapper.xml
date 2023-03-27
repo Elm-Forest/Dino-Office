@@ -3,16 +3,17 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ctgu.common.dao.user.UserInfoMapper">
-
     <select id="selectEmployee" resultMap="employee">
-        SELECT `user_info`.*,
+        SELECT
+        `user_info`.*,
+        IFNULL( email_account.email, NULL ) AS email,
         USER.role,
-        USER.rights,
-        `user_info`.status
-        FROM `user_info`,
-        USER
-        WHERE USER.id = `user_info`.id
-        AND `user_info`.dept_id = #{deptId}
+        USER.rights
+        FROM
+        `user_info`
+        INNER JOIN USER ON USER.id = `user_info`.id
+        LEFT JOIN email_account ON USER.id = email_account.id
+        WHERE `user_info`.dept_id = #{deptId}
         <if test="status !=null">
             AND `user_info`.STATUS = #{status}
         </if>
@@ -26,7 +27,7 @@
             AND USER.rights = #{rights}
         </if>
     </select>
-    <resultMap id="employee" type="com.ctgu.common.models.vo.EmployeeVO">
+    <resultMap id="employee" type="com.ctgu.common.models.dto.EmployeeDTO">
         <id column="id" property="id"/>
         <result column="dept_id" property="deptId"/>
         <result column="name" property="name"/>

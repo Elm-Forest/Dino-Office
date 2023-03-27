@@ -1,5 +1,6 @@
 package com.ctgu.common.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -24,7 +25,7 @@ public class ScheduleArrange implements Serializable {
     /**
      * 主键
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -55,13 +56,13 @@ public class ScheduleArrange implements Serializable {
      * 开始时间
      */
     @TableField(value = "begin_time")
-    private Date beginTime;
+    private String beginTime;
 
     /**
      * 结束时间
      */
     @TableField(value = "end_time")
-    private Date endTime;
+    private String endTime;
 
     @Serial
     @TableField(exist = false)

@@ -1,4 +1,4 @@
-package com.ctgu.message.service.core.impl;
+package com.ctgu.message.service.impl;
 
 import com.ctgu.common.bo.EmailAccountBO;
 import com.ctgu.common.bo.EmailBO;
@@ -8,20 +8,23 @@ import com.ctgu.common.dao.user.UserInfoMapper;
 import com.ctgu.common.entity.EmailAccount;
 import com.ctgu.common.entity.UserInfo;
 import com.ctgu.common.exception.BizException;
+import com.ctgu.common.models.dto.ContactsDTO;
 import com.ctgu.common.models.dto.Result;
 import com.ctgu.common.models.vo.EmailAccountVO;
 import com.ctgu.common.service.mail.MailClientService;
+import com.ctgu.common.service.mail.client.factory.EmailAccountFactory;
+import com.ctgu.common.utils.Assert;
 import com.ctgu.common.utils.CommonUtils;
 import com.ctgu.common.utils.ThreadHolder;
-import com.ctgu.message.service.core.EmailAccountService;
+import com.ctgu.message.service.EmailAccountService;
 import com.ctgu.redis.service.RedisService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
+import java.util.List;
 
-import static com.ctgu.common.constants.EmailAccountConst.*;
 import static com.ctgu.common.constants.RedisPrefixConst.CODE_EXPIRE_TIME;
 import static com.ctgu.common.utils.AesUtils.encryptAes;
 
@@ -39,65 +42,48 @@ public class EmailAccountServiceImpl implements EmailAccountService {
     private MailClientService mailClientService;
 
     @Resource
-    private RedisService redisService;
+    private UserInfoMapper userInfoMapper;
 
     @Resource
-    private UserInfoMapper userInfoMapper;
+    private RedisService redisService;
 
     @Override
     public Result<?> registerEmailAccount(EmailAccountVO emailAccountVO) {
         if (!emailAccountVO.getCode().equals(redisService.get(RedisPrefixConst.USER_CODE_KEY + emailAccountVO.getEmail()))) {
             throw new BizException("验证码错误！");
         }
+        EmailAccountBO emailAccountBO = EmailAccountFactory.setEmailServer(emailAccountVO.getServer());
         EmailAccount emailAccount = EmailAccount.builder()
+                .port(emailAccountBO.getPort())
+                .host(emailAccountBO.getHost())
+                .protocol(emailAccountBO.getProtocol())
                 .id(ThreadHolder.getCurrentUser().getId())
                 .email(emailAccountVO.getEmail())
                 .password(encryptAes(emailAccountVO.getPassword()))
                 .build();
-        if (emailAccountVO.getUrl().equals(MAIL_SERVER_QQ)) {
-            emailAccount.setHost(MAIL_SERVER_HOST_QQ);
-            emailAccount.setPort(MAIL_SERVER_PORT_QQ);
-            emailAccount.setProtocol(MAIL_SERVER_PROTOCOL_QQ);
-        } else {
-            emailAccount.setHost(MAIL_SERVER_HOST_163);
-            emailAccount.setPort(MAIL_SERVER_PORT_163);
-            emailAccount.setProtocol(MAIL_SERVER_PROTOCOL_163);
+        int flag;
+        try {
+            flag = emailAccountMapper.insert(emailAccount);
+        } catch (Exception ignored) {
+            flag = emailAccountMapper.updateById(emailAccount);
         }
-        int insert = emailAccountMapper.insert(emailAccount);
-        if (insert <= 0) {
-            throw new BizException("插入失败！");
-        }
-        userInfoMapper.updateById(UserInfo.builder()
-                .id(ThreadHolder.getCurrentUser().getId())
-                .email(emailAccountVO.getEmail())
-                .build());
+        Assert.greaterThanZero(flag, new RuntimeException("注册失败"));
         return Result.ok();
     }
 
+
     @Override
     public void sendCode(EmailAccountVO emailAccountVO) {
-        if (CommonUtils.isUnValidEmail(emailAccountVO.getEmail())) {
-            throw new BizException("请输入正确邮箱");
-        }
-        EmailAccountBO emailAccount = EmailAccountBO.builder()
-                .email(emailAccountVO.getEmail())
-                .password(emailAccountVO.getPassword())
-                .build();
-        if (emailAccountVO.getUrl().equals(MAIL_SERVER_QQ)) {
-            emailAccount.setHost(MAIL_SERVER_HOST_QQ);
-            emailAccount.setPort(MAIL_SERVER_PORT_QQ);
-            emailAccount.setProtocol(MAIL_SERVER_PROTOCOL_QQ);
-        } else {
-            emailAccount.setHost(MAIL_SERVER_HOST_163);
-            emailAccount.setPort(MAIL_SERVER_PORT_163);
-            emailAccount.setProtocol(MAIL_SERVER_PROTOCOL_163);
-        }
+        System.out.println(emailAccountVO);
+        EmailAccountBO emailAccountBO = EmailAccountFactory.setEmailServer(emailAccountVO.getServer());
+        emailAccountBO.setEmail(emailAccountVO.getEmail());
+        emailAccountBO.setPassword(emailAccountVO.getPassword());
         String code = CommonUtils.getRandomCode();
         log.info("已生成验证码：" + code);
         int deadline = (int) CODE_EXPIRE_TIME / 60;
         log.info("已设置验证码的过期时间为：" + deadline + "min");
         try {
-            mailClientService.smtpMail(emailAccount, EmailBO.builder()
+            mailClientService.smtpMail(emailAccountBO, EmailBO.builder()
                     .email(emailAccountVO.getEmail())
                     .subject("【AutoOffice】开发者测试邮件")
                     .content("您正在进行邮箱客户端绑定操作<br>" +
@@ -114,6 +100,15 @@ public class EmailAccountServiceImpl implements EmailAccountService {
     @Override
     public Result<?> checkExist() {
         EmailAccount emailAccount = emailAccountMapper.selectById(ThreadHolder.getCurrentUser().getId());
-        return emailAccount == null ? Result.fail("邮箱不存在") : Result.ok(emailAccount.getEmail());
+        Assert.objNotNull(emailAccount, new BizException("邮箱不存在"));
+        return Result.ok(emailAccount.getEmail());
+    }
+
+    @Override
+    public Result<?> selectContacts(String name) {
+        Long id = ThreadHolder.getCurrentUser().getId();
+        UserInfo userInfo = userInfoMapper.selectById(id);
+        List<ContactsDTO> contacts = emailAccountMapper.selectContacts(userInfo.getDeptId(), id, name);
+        return Result.ok(contacts);
     }
 }

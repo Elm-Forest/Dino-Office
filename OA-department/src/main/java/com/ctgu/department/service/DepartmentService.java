@@ -1,11 +1,13 @@
 package com.ctgu.department.service;
 
 import com.ctgu.common.entity.Department;
-import com.ctgu.common.models.vo.DepartmentVO;
 import com.ctgu.common.models.dto.Result;
+import com.ctgu.common.models.vo.DepartmentVO;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
+ * 部门服务
+ *
  * @author 李嘉超
  * @author zhang jinming
  * @version 1.0
@@ -42,9 +44,26 @@ public interface DepartmentService {
      */
     Result<Boolean> deleteDepartment();
 
+    /**
+     * 上传头像
+     *
+     * @param multipartFile 头像文件
+     * @return 是否上传成功
+     */
     Result<?> uploadHeadImage(MultipartFile multipartFile);
 
+    /**
+     * 查询头像
+     *
+     * @return 头像的url
+     */
     Result<?> selectHeadImg();
 
+    /**
+     * 根据部门名称查询部门信息
+     *
+     * @param name 部门名称
+     * @return 部门信息
+     */
     Result<?> selectDepartmentByName(String name);
 }

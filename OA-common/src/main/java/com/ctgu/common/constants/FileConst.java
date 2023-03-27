@@ -25,8 +25,16 @@ public class FileConst {
      * 文件日志常量
      */
     public static final int OPERATION_INSERT = 1;
+    public static final int OPERATION_SELECT = 6;
     public static final int OPERATION_MODIFY = 2;
     public static final int OPERATION_DELETE = 3;
     public static final int OPERATION_RESTORE = 4;
     public static final int OPERATION_COMP_DELETE = 5;
+    /**
+     * 文件状态
+     * 1：存在
+     * 0：已移除
+     */
+    public static final int FILE_STATUS_LIVE = 1;
+    public static final int FILE_STATUS_DIED = 0;
 }

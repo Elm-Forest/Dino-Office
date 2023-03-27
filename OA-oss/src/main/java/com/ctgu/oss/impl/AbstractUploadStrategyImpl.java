@@ -10,11 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 
+
 /**
- * 抽象上传模板
- *
- * @author CTGU_LLZ(404name)
- * @date 2021/07/28
+ * @author Elm Forest
  */
 @Service
 public abstract class AbstractUploadStrategyImpl implements UploadStrategy {
@@ -22,18 +20,12 @@ public abstract class AbstractUploadStrategyImpl implements UploadStrategy {
     @Override
     public String uploadFile(MultipartFile file, String path) {
         try {
-            // 获取文件md5值
             String md5 = DigestUtil.md5Hex(file.getInputStream());
-            // 获取文件扩展名
             String extName = FileNameUtil.extName(file.getOriginalFilename());
-            // 重新生成文件名
-            String fileName = md5 + extName;
-            // 判断文件是否已存在
+            String fileName = md5 + '.' + extName;
             if (!exists(path + fileName)) {
-                // 不存在则继续上传
                 upload(path, fileName, file.getInputStream(), file.getContentType());
             }
-            // 返回文件访问路径
             return getFileAccessUrl(path + fileName);
         } catch (BizException e) {
             throw new BizException(e.getMessage());

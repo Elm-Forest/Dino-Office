@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
 
 /**
  * @author Li Zihan
@@ -20,28 +19,41 @@ public class ScheduleController {
     @Resource
     private ScheduleService scheduleService;
 
-    @GetMapping
-    @ApiOperation(value = "用户查看日程表")
+    @GetMapping("/list")
+    @ApiOperation(value = "用户查看所有日程表")
     public Result<?> findSchedule() {
         return scheduleService.seeSchedule();
     }
 
+    @GetMapping("/one")
+    @ApiOperation(value = "用户查看指定日程表")
+    public Result<?> findScheduleById(@RequestParam("scheduleId") Long scheduleId) {
+        return scheduleService.seeScheduleById(scheduleId);
+    }
+
     @PostMapping
     @ApiOperation(value = "用户添加日程表")
-    public Result<?> addSchedule() {
-        return scheduleService.addSchedule();
+    public Result<?> addSchedule(@RequestParam("scheduleTitle") String scheduleTitle,
+                                 @RequestParam("scheduleContent") String scheduleContent,
+                                 @RequestParam("beginTime") String beginTime,
+                                 @RequestParam("endTime") String endTime) {
+        return scheduleService.addSchedule(scheduleTitle, scheduleContent, beginTime, endTime);
     }
 
     @PutMapping
     @ApiOperation(value = "用户编辑日程表")
-    public Result<?> setSchedule(@RequestParam("scheduleTitle") String scheduleTitle, @RequestParam("scheduleContent") String scheduleContent, @RequestParam("beginTime") Date beginTime, @RequestParam("endTime") Date endTime) {
-        return scheduleService.setSchedule(scheduleTitle, scheduleContent, beginTime, endTime);
+    public Result<?> setSchedule(@RequestParam("scheduleId") Long scheduleId,
+                                 @RequestParam("scheduleTitle") String scheduleTitle,
+                                 @RequestParam("scheduleContent") String scheduleContent,
+                                 @RequestParam("beginTime") String beginTime,
+                                 @RequestParam("endTime") String endTime) {
+        return scheduleService.setSchedule(scheduleId, scheduleTitle, scheduleContent, beginTime, endTime);
     }
 
     @DeleteMapping
     @ApiOperation(value = "用户删除日程表")
-    public Result<?> delSchedule() {
-        return scheduleService.delSchedule();
+    public Result<?> delSchedule(@RequestParam("scheduleId") Long scheduleId) {
+        return scheduleService.delSchedule(scheduleId);
     }
 
     @PostMapping("/friend")
@@ -57,9 +69,15 @@ public class ScheduleController {
     }
 
     @GetMapping("/friend")
-    @ApiOperation(value = "用户查看联系人日程表")
-    public Result<?> seeFriends(@RequestParam("friendId") Long friendId) {
-        return scheduleService.seeFriends(friendId);
+    @ApiOperation(value = "用户查看所有联系人")
+    public Result<?> seeFriends() {
+        return scheduleService.seeFriends();
+    }
+
+    @GetMapping("/friendSchedule")
+    @ApiOperation(value = "用户查看指定联系人日程表")
+    public Result<?> seeFriendsSchedule(@RequestParam("friendId") Long friendId) {
+        return scheduleService.seeFriendsSchedule(friendId);
     }
 
 }

@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ctgu.common.bo.EmailBO;
 import com.ctgu.common.constants.RedisPrefixConst;
-import com.ctgu.common.dao.department.DepartmentMapper;
 import com.ctgu.common.dao.user.UserInfoMapper;
 import com.ctgu.common.dao.user.UserMapper;
-import com.ctgu.common.entity.Department;
 import com.ctgu.common.entity.User;
 import com.ctgu.common.entity.UserInfo;
 import com.ctgu.common.exception.BizException;
@@ -45,9 +43,6 @@ public class UserCommonServiceImpl implements UserCommonService {
     private UserInfoMapper userInfoMapper;
 
     @Resource
-    private DepartmentMapper departmentMapper;
-
-    @Resource
     private MailService mailService;
 
     @Override
@@ -77,21 +72,12 @@ public class UserCommonServiceImpl implements UserCommonService {
     }
 
     @Override
-    public Boolean checkEmail(String email) {
-        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
-                .select(User::getEmail)
-                .eq(User::getEmail, email));
-        return nonNull(user);
-    }
-
-    @Override
     public int updateUserInfoById(UserInfoVO user) {
         return userInfoMapper.updateById(UserInfo.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .sex(user.getSex())
                 .phone(user.getPhone())
-                .email(user.getEmail())
                 .address(user.getAddress())
                 .build());
     }
@@ -104,7 +90,6 @@ public class UserCommonServiceImpl implements UserCommonService {
                 .deptId(user.getDeptId())
                 .sex(user.getSex())
                 .phone(user.getPhone())
-                .email(user.getEmail())
                 .address(user.getAddress())
                 .build());
     }
@@ -146,6 +131,4 @@ public class UserCommonServiceImpl implements UserCommonService {
     public String getUserNameByUserId(Long id) {
         return userMapper.getUserNameByUserId(id);
     }
-
-
 }

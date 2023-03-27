@@ -5,6 +5,8 @@ import com.ctgu.common.entity.Department;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
+ * 部门mapper
+ *
  * @author Zhang Jinming
  * @create 11/8/2022 上午10:22
  */

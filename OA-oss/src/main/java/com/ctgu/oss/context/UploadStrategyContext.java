@@ -2,11 +2,11 @@ package com.ctgu.oss.context;
 
 import com.ctgu.common.enums.UploadModeEnum;
 import com.ctgu.oss.UploadStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 
@@ -21,7 +21,7 @@ public class UploadStrategyContext {
     @Value("${upload.mode}")
     private String uploadMode;
 
-    @Autowired
+    @Resource
     private Map<String, UploadStrategy> uploadStrategyMap;
 
     /**
@@ -35,8 +35,14 @@ public class UploadStrategyContext {
         return uploadStrategyMap.get(UploadModeEnum.getStrategy(uploadMode)).uploadFile(file, path);
     }
 
-    public Boolean executeDeleteStrategy(String url) {
-        return uploadStrategyMap.get(UploadModeEnum.getStrategy(uploadMode)).deleteFile(url);
+    /**
+     * 删除文件
+     *
+     * @param path 路径
+     * @return {@link String} 文件地址
+     */
+    public Boolean executeDeleteStrategy(String path) {
+        return uploadStrategyMap.get(UploadModeEnum.getStrategy(uploadMode)).deleteFile(path);
     }
 
 }

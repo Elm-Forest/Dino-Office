@@ -23,16 +23,9 @@ public class DocumentDTO {
 
     private Long deptId;
 
-    /**
-     * 创建者id
-     */
-    private Long createId;
+    private Integer role;
 
     private String createName;
-    /**
-     * 修改者id
-     */
-    private Long modifyId;
 
     private String modifyName;
 

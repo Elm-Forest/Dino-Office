@@ -25,7 +25,7 @@ public class WebSocketService extends TextWebSocketHandler {
     private Long userId;
 
     public void sendMessageToUserId(Long id, String message) throws IOException {
-        logger.info("{}发送消息到{},消息：{}", userId, id, message);
+        logger.info("{} send message to {}, message: {}", userId, id, message);
         Assert.notNull(id);
         WebSocketSession tarSession = SESSION_MAPS.get(id);
         tarSession.sendMessage(new TextMessage(message));
@@ -44,7 +44,7 @@ public class WebSocketService extends TextWebSocketHandler {
         this.userId = ThreadHolder.getCurrentUser().getId();
         SESSION_MAPS.put(this.userId, this.session);
         WebSocketService.ONLINE_COUNT.incrementAndGet();
-        logger.info("用户{}连接成功,当前在线人数为{}", userId, ONLINE_COUNT);
+        logger.info("user {} build the connection, current online {}", userId, ONLINE_COUNT);
         ThreadHolder.remove();
     }
 
@@ -53,7 +53,7 @@ public class WebSocketService extends TextWebSocketHandler {
         this.session.close();
         SESSION_MAPS.remove(this.userId);
         WebSocketService.ONLINE_COUNT.decrementAndGet();
-        logger.info("用户{}关闭连接！当前在线人数为{}", userId, ONLINE_COUNT);
+        logger.info("user {} close the connection, current online {}", userId, ONLINE_COUNT);
     }
 }
 

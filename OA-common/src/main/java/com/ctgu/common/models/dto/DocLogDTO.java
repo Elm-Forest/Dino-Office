@@ -1,4 +1,4 @@
-package com.ctgu.common.models.vo;
+package com.ctgu.common.models.dto;
 
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
@@ -17,21 +17,22 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @ApiModel(description = "文件日志结果")
-public class DocLogVO {
+public class DocLogDTO {
     private Long id;
-    /**
-     * 文档名称
-     */
+
     private String name;
-    /**
-     * 修改人
-     */
+
     private String modifyName;
 
     private String extension;
+
     private String type;
+
     private String filePath;
+
     private Long size;
+
     private Integer operation;
+
     private Date operationTime;
 }

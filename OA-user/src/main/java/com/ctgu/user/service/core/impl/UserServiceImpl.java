@@ -9,6 +9,7 @@ import com.ctgu.common.exception.BizException;
 import com.ctgu.common.models.dto.AuthInfoDTO;
 import com.ctgu.common.models.dto.Result;
 import com.ctgu.common.models.vo.UserVO;
+import com.ctgu.common.utils.Assert;
 import com.ctgu.common.utils.ThreadHolder;
 import com.ctgu.redis.service.RedisService;
 import com.ctgu.user.service.common.UserCommonService;
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendCode(String email) {
+    public void sendPasswordCode(String email) {
         userCommonService.sendCode(email, "找回密码");
     }
 
@@ -83,9 +84,7 @@ public class UserServiceImpl implements UserService {
                 .password(rsaDTO.getPassword())
                 .salt(rsaDTO.getSalt())
                 .build());
-        if (update <= 0) {
-            throw new RuntimeException("更新失败！");
-        }
+        Assert.greaterThanZero(update, new RuntimeException("修改失败"));
         return Result.ok();
     }
 
@@ -95,4 +94,22 @@ public class UserServiceImpl implements UserService {
         userCommonService.sendCode(user.getEmail(), "重置密码");
     }
 
+    @Override
+    public Result<?> updateEmail(String email, String code) {
+        User user = userMapper.selectById(ThreadHolder.getCurrentUser().getId());
+        if (!code.equals(redisService.get(RedisPrefixConst.USER_CODE_KEY + email))) {
+            throw new BizException("验证码错误！");
+        }
+        int update = userMapper.updateById(User.builder()
+                .id(user.getId())
+                .email(email)
+                .build());
+        Assert.greaterThanZero(update, new RuntimeException("修改失败"));
+        return Result.ok();
+    }
+
+    @Override
+    public void sendEmailCode(String email) {
+        userCommonService.sendCode(email, "修改邮箱");
+    }
 }

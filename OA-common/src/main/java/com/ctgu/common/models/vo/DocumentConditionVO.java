@@ -48,4 +48,9 @@ public class DocumentConditionVO {
      * 结束的上一次修改时间
      */
     private String endTime;
+
+    /**
+     * 路径
+     */
+    private String path;
 }

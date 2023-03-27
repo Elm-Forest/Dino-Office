@@ -35,5 +35,5 @@ public class EmailAccountVO {
     /**
      *
      */
-    private Integer url;
+    private Integer server;
 }

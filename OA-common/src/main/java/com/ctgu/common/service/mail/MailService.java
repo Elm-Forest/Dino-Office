@@ -6,6 +6,8 @@ import com.ctgu.common.bo.EmailBO;
 import javax.mail.MessagingException;
 
 /**
+ * 邮件服务
+ *
  * @author Zhang Jinming
  * @create 14/6/2022 下午5:16
  */

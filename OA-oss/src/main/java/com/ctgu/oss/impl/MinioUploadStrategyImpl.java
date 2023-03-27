@@ -11,11 +11,9 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 
+
 /**
- * oss上传策略
- *
- * @author CTGU_LLZ(404name)
- * @date 2021/07/28
+ * @author Elm Forest
  */
 @Service("minioUploadStrategyImpl")
 @EnableConfigurationProperties(MinioConfigProperties.class)

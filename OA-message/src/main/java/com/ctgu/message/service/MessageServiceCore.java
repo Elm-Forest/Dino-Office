@@ -1,10 +1,10 @@
-package com.ctgu.message.service.core;
+package com.ctgu.message.service;
 
 import com.ctgu.common.entity.Message;
+import com.ctgu.common.models.dto.PageResult;
 import com.ctgu.common.models.dto.Result;
 import com.ctgu.common.models.vo.MessageConditionVO;
 import com.ctgu.common.models.vo.MessageVO;
-import com.ctgu.common.models.dto.PageResult;
 
 
 /**
@@ -17,12 +17,11 @@ public interface MessageServiceCore {
      * 根据用户ID查看用户所有未发布的消息
      * 返回对应用户ID的未发布的消息
      *
-     * @param id      发送用户ID
      * @param current 当前页码
      * @param size    当页条数
      * @return 所有该ID用户未发布的消息
      */
-    Result<PageResult<Message>> getAllNotReleaseMessageBySendUserId(Long id, Integer current, Integer size);
+    Result<PageResult<Message>> getAllNotReleaseMessageBySendUserId(Integer current, Integer size);
 
     /**
      * 根据用户ID查看用户所有已发布的消息
@@ -53,7 +52,7 @@ public interface MessageServiceCore {
      * @param messageVO 前端传来的MessageVO对象
      * @return 是否保存成功
      */
-    Result<Boolean> insertMessageNotRelease(MessageVO messageVO);
+    Result<Boolean> saveMessage(MessageVO messageVO);
 
     /**
      * 保存消息到数据库，这是发布消息，发送消息，以后不可以修改

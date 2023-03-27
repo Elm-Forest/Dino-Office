@@ -16,6 +16,8 @@ import java.io.IOException;
 import static com.ctgu.common.constants.RoleConst.ADMIN_RIGHTS;
 
 /**
+ * 管理员拦截器
+ *
  * @author Zhang Jinming
  * @date 20/8/2022 下午9:09
  */

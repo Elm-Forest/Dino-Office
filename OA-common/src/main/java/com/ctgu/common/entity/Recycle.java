@@ -39,6 +39,12 @@ public class Recycle implements Serializable {
     @TableField(value = "delete_time")
     private Date deleteTime;
 
+    /**
+     * 移除标识
+     */
+    @TableField(value = "status")
+    private Integer status;
+
     @Serial
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

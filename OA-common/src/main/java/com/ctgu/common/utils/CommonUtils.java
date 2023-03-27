@@ -1,5 +1,9 @@
 package com.ctgu.common.utils;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
+
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,5 +53,20 @@ public class CommonUtils {
             codeNum.append((char) code[random.nextInt(3)]);
         }
         return codeNum.toString();
+    }
+
+    /**
+     * 日期偏移至下一日零点
+     *
+     * @param endTime 查找结束时间
+     * @return 新日期
+     */
+    public static String dateMoveOneDay(String endTime) {
+        if (!StrUtil.hasEmpty(endTime)) {
+            DateTime date = DateUtil.parse(endTime, "yyyy-MM-dd");
+            DateTime newDate = DateUtil.offsetDay(date, 1);
+            endTime = newDate.toString();
+        }
+        return endTime;
     }
 }

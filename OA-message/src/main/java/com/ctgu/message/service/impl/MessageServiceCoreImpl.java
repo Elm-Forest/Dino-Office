@@ -1,4 +1,4 @@
-package com.ctgu.message.service.core.impl;
+package com.ctgu.message.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -8,12 +8,12 @@ import com.ctgu.common.dao.message.MessageMapper;
 import com.ctgu.common.entity.Message;
 import com.ctgu.common.entity.User;
 import com.ctgu.common.exception.BizException;
+import com.ctgu.common.models.dto.PageResult;
 import com.ctgu.common.models.dto.Result;
 import com.ctgu.common.models.vo.MessageConditionVO;
 import com.ctgu.common.models.vo.MessageVO;
-import com.ctgu.common.models.dto.PageResult;
-import com.ctgu.message.service.common.MessageServiceCommon;
-import com.ctgu.message.service.core.MessageServiceCore;
+import com.ctgu.common.utils.ThreadHolder;
+import com.ctgu.message.service.MessageServiceCore;
 import com.ctgu.user.service.common.UserCommonService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -34,13 +34,11 @@ public class MessageServiceCoreImpl implements MessageServiceCore {
     private MessageMapper messageMapper;
 
     @Resource
-    private MessageServiceCommon messageServiceCommon;
-
-    @Resource
     private UserCommonService userCommonService;
 
     @Override
-    public Result<PageResult<Message>> getAllNotReleaseMessageBySendUserId(Long id, Integer current, Integer size) {
+    public Result<PageResult<Message>> getAllNotReleaseMessageBySendUserId(Integer current, Integer size) {
+        Long id = ThreadHolder.getCurrentUser().getId();
         //判断当前页和条数是不是不满足条件，不满足条件直接返回
         if (current <= 0 || size <= 0 || ObjectUtils.isEmpty(current) || ObjectUtils.isEmpty(size)) {
             List<Message> listNull = new ArrayList<>();
@@ -111,10 +109,10 @@ public class MessageServiceCoreImpl implements MessageServiceCore {
 
     @Override
     public Result<PageResult<Message>> getAllNotOverdueAndHaveReleasedMessageByAcceptUserId(Long id, Integer current, Integer size) {
-
         //先查询用户所有的已接受的消息，此时没考虑过期情况
-        List<Message> allHaveReleasedMessage = messageServiceCommon.getAllHaveReleasedMessageByAcceptUserId(id);
-
+        List<Message> allHaveReleasedMessage = messageMapper.selectList(new QueryWrapper<Message>()
+                .eq("au_id", id)
+                .eq("message_type", MessageConst.HAVE_RELEASE));
         //下面就是一个用来判断当前请求时间与对应的过期时间对比，要是超过了就要设置消息为已过期的状态
         //这里我觉得应该使用一个动态添加过期执行的过期任务比较好，要是消息较多的话，for循环比较消耗性能
         for (Message value : allHaveReleasedMessage) {
@@ -124,20 +122,16 @@ public class MessageServiceCoreImpl implements MessageServiceCore {
                 //当前时间
                 String dateStr1 = DateUtil.now();
                 Date date1 = DateUtil.parse(dateStr1);
-                //System.out.println("当前时间"+date1);
                 //过期时间
                 Date validTime = value.getMessageValidTime();
                 String dateStr3 = DateUtil.format(validTime, "yyyy-MM-dd HH:mm:ss");
                 Date date3 = DateUtil.parse(dateStr3);
-                //System.out.println("过期时间"+date3);
                 //比较是否过期，负数表示已经过期，正数表示在当前时间下还没有过期
                 int timeCompareTo = date3.compareTo(date1);
-                //System.out.println(timeCompareTo);
                 //说明当前已经过期了，所以要更新消息过期标志message_overdue为1
                 if (timeCompareTo < 0) {
                     //设置为过期状态
                     value.setMessageOverdue(MessageConst.HAVE_OVERDUE);
-                    //System.out.println(allHaveReleasedMessage.get(i));
                     int update = messageMapper.updateById(value);
                     if (update == 0) {
                         throw new BizException("查询失败!");
@@ -173,7 +167,6 @@ public class MessageServiceCoreImpl implements MessageServiceCore {
                 message.setSendUserName(sendUserName);
             }
             PageResult<Message> userPageResult = new PageResult<>(messagePage.getRecords(), (int) messagePage.getTotal());
-
             return Result.ok(userPageResult);
         } else {
             List<Message> listNull = new ArrayList<>();
@@ -184,7 +177,7 @@ public class MessageServiceCoreImpl implements MessageServiceCore {
     }
 
     @Override
-    public Result<Boolean> insertMessageNotRelease(MessageVO messageVO) {
+    public Result<Boolean> saveMessage(MessageVO messageVO) {
         Message build = Message.builder()
                 .suId(messageVO.getSuId())
                 .auId(messageVO.getAuId())

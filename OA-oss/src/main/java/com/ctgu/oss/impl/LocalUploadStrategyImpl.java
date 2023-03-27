@@ -7,11 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 
+
 /**
- * 本地上传策略
- *
- * @author CTGU_LLZ(404name)
- * @date 2021/07/28
+ * @author Elm Forest
  */
 @Service("localUploadStrategyImpl")
 public class LocalUploadStrategyImpl extends AbstractUploadStrategyImpl {

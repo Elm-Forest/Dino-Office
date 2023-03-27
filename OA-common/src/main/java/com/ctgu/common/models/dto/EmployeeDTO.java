@@ -1,4 +1,4 @@
-package com.ctgu.common.models.vo;
+package com.ctgu.common.models.dto;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(description = "员工视图")
-public class EmployeeVO {
+@ApiModel(description = "员工信息")
+public class EmployeeDTO {
     @JSONField(serializeUsing = ToStringSerializer.class)
     private String id;
 

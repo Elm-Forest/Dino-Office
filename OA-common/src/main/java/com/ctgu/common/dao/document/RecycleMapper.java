@@ -2,7 +2,7 @@ package com.ctgu.common.dao.document;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ctgu.common.entity.Recycle;
-import com.ctgu.common.models.vo.RecycleVO;
+import com.ctgu.common.models.dto.RecycleDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -13,7 +13,18 @@ import java.util.List;
  */
 @Mapper
 public interface RecycleMapper extends BaseMapper<Recycle> {
-    List<RecycleVO> selectRecDoc(Long deptId);
+    /**
+     * 查询回收站文档
+     *
+     * @param deptId 部门id
+     * @return 回收站文档列表
+     */
+    List<RecycleDTO> selectRecDoc(Long deptId);
 
+    /**
+     * 查询过期的回收站文件夹
+     *
+     * @return 回收站文件夹列表
+     */
     List<Long> selectTimeOutIds();
 }

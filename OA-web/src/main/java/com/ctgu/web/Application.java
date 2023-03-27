@@ -11,6 +11,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 
 /**
+ * 启动类
+ *
  * @author Elm Forest
  */
 @EnableAsync

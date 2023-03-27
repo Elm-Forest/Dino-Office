@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * 邮箱账号信息
+ *
  * @author Zhang Jinming
  * @date 20/8/2022 下午2:12
  */

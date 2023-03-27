@@ -30,7 +30,5 @@ public class UserInfoVO {
 
     private String phone;
 
-    private String email;
-
     private String headImg;
 }

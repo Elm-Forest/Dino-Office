@@ -4,6 +4,7 @@ import com.ctgu.common.models.dto.Result;
 import com.ctgu.common.models.vo.DocLogConditionVO;
 import com.ctgu.document.service.DocumentLogService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,8 @@ public class DocumentLogController {
     @Resource
     private DocumentLogService documentLogService;
 
-    @GetMapping("/doc/log")
+    @ApiOperation(value = "查询文件日志")
+    @GetMapping
     public Result<?> selectDocument(DocLogConditionVO docLogVO) {
         return documentLogService.selectDocumentLog(docLogVO);
     }

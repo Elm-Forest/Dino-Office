@@ -18,6 +18,8 @@ import static com.ctgu.common.constants.ShiroConst.HASH_ITERATIONS;
 import static com.ctgu.common.constants.ShiroConst.RSA_TYPE;
 
 /**
+ * Shiro配置类
+ *
  * @author Zhang Jinming
  * @create 7/8/2022 下午11:37
  */
@@ -50,11 +52,17 @@ public class ShiroConfig {
         return securityManager;
     }
 
+    /**
+     * 创建Realm
+     */
     @Bean(name = "userRealm")
     public UserRealm userRealm() {
         return new UserRealm();
     }
 
+    /**
+     * 开启Shiro注解
+     */
     @Bean
     public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();

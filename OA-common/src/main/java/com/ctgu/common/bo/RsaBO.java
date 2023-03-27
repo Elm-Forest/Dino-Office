@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * RSA加密信息
+ *
  * @author Zhang Jinming
  * @date 16/8/2022 上午10:39
  */

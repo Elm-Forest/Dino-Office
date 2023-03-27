@@ -6,14 +6,15 @@ import com.ctgu.common.dao.schedule.FriendsMapper;
 import com.ctgu.common.dao.schedule.NoteMapper;
 import com.ctgu.common.dao.schedule.ScheduleDeptMapper;
 import com.ctgu.common.dao.schedule.ScheduleMapper;
+import com.ctgu.common.dao.user.UserInfoMapper;
 import com.ctgu.common.entity.*;
 import com.ctgu.common.models.dto.Result;
+import com.ctgu.common.utils.Assert;
 import com.ctgu.common.utils.ThreadHolder;
 import com.ctgu.schedule.service.ScheduleService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -31,43 +32,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     private FriendsMapper friendsMapper;
 
     @Resource
+    private UserInfoMapper userInfoMapper;
+
+    @Resource
     private NoteMapper noteMapper;
 
     @Resource
     private ScheduleDeptMapper scheduleDeptMapper;
-
-    @Override
-    public Result<?> seeSchedule() {
-        User user = ThreadHolder.getCurrentUser();
-        Long id = user.getId();
-        LambdaUpdateWrapper<ScheduleArrange> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.eq(ScheduleArrange::getUserId, id);
-        List<ScheduleArrange> scheduleArrange = scheduleMapper.selectList(updateWrapper);
-        return Result.ok(scheduleArrange);
-    }
-
-    @Override
-    public Result<?> setSchedule(String scheduleTitle, String scheduleContent, Date beginTime, Date endTime) {
-        Calendar ca = Calendar.getInstance();
-        ca.setTime(new Date());
-        ca.add(Calendar.DATE, -1);
-        Date dateNow = new Date();
-        User user = ThreadHolder.getCurrentUser();
-        Long id = user.getId();
-        LambdaUpdateWrapper<ScheduleArrange> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.eq(ScheduleArrange::getUserId, id)
-                .set(ScheduleArrange::getScheduleTitle, scheduleTitle)
-                .set(ScheduleArrange::getScheduleContent, scheduleContent)
-                .set(ScheduleArrange::getCreateTime, dateNow)
-                .set(ScheduleArrange::getBeginTime, beginTime)
-                .set(ScheduleArrange::getEndTime, endTime);
-        ScheduleArrange scheduleArrange = new ScheduleArrange();
-        int result = scheduleMapper.update(scheduleArrange, updateWrapper);
-        if (result <= 0) {
-            throw new RuntimeException("更新日程表失败");
-        }
-        return Result.ok();
-    }
 
     @Override
     public Result<?> addFriends(Long friendId) {
@@ -99,7 +70,17 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Result<?> seeFriends(Long friendId) {
+    public Result<?> seeFriends() {
+        User user = ThreadHolder.getCurrentUser();
+        Long id = user.getId();
+        LambdaQueryWrapper<Friends> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Friends::getUserId, id);
+        List<Friends> list = friendsMapper.selectList(queryWrapper);
+        return Result.ok(list);
+    }
+
+    @Override
+    public Result<?> seeFriendsSchedule(Long friendId) {
         User user = ThreadHolder.getCurrentUser();
         Long id = user.getId();
         LambdaQueryWrapper<Friends> queryWrapper = new LambdaQueryWrapper<>();
@@ -109,6 +90,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         LambdaUpdateWrapper<ScheduleArrange> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(ScheduleArrange::getUserId, friends.getFriendId());
         List<ScheduleArrange> list = scheduleMapper.selectList(updateWrapper);
+        Assert.objNotNull(friends, new RuntimeException("并未拥有此联系人的好友，请先添加其为好友"));
         return Result.ok(list);
     }
 
@@ -128,11 +110,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Result<?> delNote() {
+    public Result<?> delNote(Long noteId) {
         User user = ThreadHolder.getCurrentUser();
         Long id = user.getId();
         LambdaQueryWrapper<Note> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Note::getUserId, id);
+        queryWrapper.eq(Note::getUserId, id)
+                .eq(Note::getId, noteId);
         int del = noteMapper.delete(queryWrapper);
         if (del == 0) {
             throw new RuntimeException("用户删除便签失败");
@@ -141,11 +124,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Result<?> updateNote(String noteContent) {
+    public Result<?> updateNote(String noteContent, Long noteId) {
         User user = ThreadHolder.getCurrentUser();
         Long id = user.getId();
         LambdaUpdateWrapper<Note> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(Note::getUserId, id)
+                .eq(Note::getId, noteId)
                 .set(Note::getNoteContent, noteContent);
         Note note = new Note();
         int result = noteMapper.update(note, updateWrapper);
@@ -156,42 +140,54 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Result<?> findNote() {
+    public Result<?> findNoteById(Long noteId) {
         User user = ThreadHolder.getCurrentUser();
         Long id = user.getId();
         LambdaQueryWrapper<Note> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Note::getUserId, id);
+        queryWrapper.eq(Note::getUserId, id)
+                .eq(Note::getId, noteId);
         Note note = noteMapper.selectOne(queryWrapper);
         return Result.ok(note);
     }
 
     @Override
-    public Result<?> addSchedule() {
+    public Result<?> findNote() {
         User user = ThreadHolder.getCurrentUser();
         Long id = user.getId();
-        Calendar ca = Calendar.getInstance();
-        //设置时间为当前时间
-        ca.setTime(new Date());
-        ca.add(Calendar.DATE, -1);
-        // 获取当前时间
+        LambdaQueryWrapper<Note> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Note::getUserId, id);
+        List<Note> list = noteMapper.selectList(queryWrapper);
+        return Result.ok(list);
+    }
+
+    @Override
+    public Result<?> addSchedule(String scheduleTitle,
+                                 String scheduleContent,
+                                 String beginTime,
+                                 String endTime) {
+        User user = ThreadHolder.getCurrentUser();
+        Long id = user.getId();
         Date dateNow = new Date();
         ScheduleArrange scheduleArrange = ScheduleArrange.builder()
                 .userId(id)
+                .scheduleTitle(scheduleTitle)
+                .scheduleContent(scheduleContent)
+                .beginTime(beginTime)
+                .endTime(endTime)
                 .createTime(dateNow)
                 .build();
         int insert = scheduleMapper.insert(scheduleArrange);
-        if (insert == 0) {
-            throw new RuntimeException("用户添加日程表失败");
-        }
+        Assert.greaterThanZero(insert, new RuntimeException("用户添加日程表失败"));
         return Result.ok();
     }
 
     @Override
-    public Result<?> delSchedule() {
+    public Result<?> delSchedule(Long scheduleId) {
         User user = ThreadHolder.getCurrentUser();
         Long id = user.getId();
         LambdaQueryWrapper<ScheduleArrange> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ScheduleArrange::getUserId, id);
+        queryWrapper.eq(ScheduleArrange::getUserId, id)
+                .eq(ScheduleArrange::getId, scheduleId);
         int del = scheduleMapper.delete(queryWrapper);
         if (del == 0) {
             throw new RuntimeException("用户删除日程表失败");
@@ -200,15 +196,64 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Result<?> addScheduleDept(Long deptId) {
-        Calendar ca = Calendar.getInstance();
-        //设置时间为当前时间
-        ca.setTime(new Date());
-        ca.add(Calendar.DATE, -1);
-        // 获取当前时间
+    public Result<?> seeSchedule() {
+        User user = ThreadHolder.getCurrentUser();
+        Long id = user.getId();
+        LambdaUpdateWrapper<ScheduleArrange> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(ScheduleArrange::getUserId, id);
+        List<ScheduleArrange> list = scheduleMapper.selectList(updateWrapper);
+        return Result.ok(list);
+    }
+
+    @Override
+    public Result<?> seeScheduleById(Long scheduleId) {
+        User user = ThreadHolder.getCurrentUser();
+        Long id = user.getId();
+        LambdaUpdateWrapper<ScheduleArrange> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(ScheduleArrange::getUserId, id)
+                .eq(ScheduleArrange::getId, scheduleId);
+        ScheduleArrange scheduleArrange = scheduleMapper.selectOne(updateWrapper);
+        return Result.ok(scheduleArrange);
+    }
+
+    @Override
+    public Result<?> setSchedule(Long scheduleId,
+                                 String scheduleTitle,
+                                 String scheduleContent,
+                                 String beginTime,
+                                 String endTime) {
+        Date dateNow = new Date();
+        User user = ThreadHolder.getCurrentUser();
+        Long id = user.getId();
+        LambdaUpdateWrapper<ScheduleArrange> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(ScheduleArrange::getUserId, id)
+                .eq(ScheduleArrange::getId, scheduleId)
+                .set(ScheduleArrange::getScheduleTitle, scheduleTitle)
+                .set(ScheduleArrange::getScheduleContent, scheduleContent)
+                .set(ScheduleArrange::getCreateTime, dateNow)
+                .set(ScheduleArrange::getBeginTime, beginTime)
+                .set(ScheduleArrange::getEndTime, endTime);
+        ScheduleArrange scheduleArrange = new ScheduleArrange();
+        int result = scheduleMapper.update(scheduleArrange, updateWrapper);
+        if (result <= 0) {
+            throw new RuntimeException("更新日程表失败");
+        }
+        return Result.ok();
+    }
+
+    @Override
+    public Result<?> addScheduleDept(String scheduleTitle,
+                                     String scheduleContent,
+                                     String beginTime,
+                                     String endTime) {
+        UserInfo userInfo = userInfoMapper.selectById(ThreadHolder.getCurrentUser().getId());
         Date dateNow = new Date();
         ScheduleDepartment scheduleDepartment = ScheduleDepartment.builder()
-                .deptId(deptId)
+                .deptId(userInfo.getDeptId())
+                .scheduleTitle(scheduleTitle)
+                .scheduleContent(scheduleContent)
+                .beginTime(beginTime)
+                .endTime(endTime)
                 .createTime(dateNow)
                 .build();
         int insert = scheduleDeptMapper.insert(scheduleDepartment);
@@ -219,9 +264,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Result<?> delScheduleDept(Long deptId) {
+    public Result<?> delScheduleDept(Long scheduleDeptId) {
+        UserInfo userInfo = userInfoMapper.selectById(ThreadHolder.getCurrentUser().getId());
         LambdaQueryWrapper<ScheduleDepartment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ScheduleDepartment::getDeptId, deptId);
+        queryWrapper.eq(ScheduleDepartment::getDeptId, userInfo.getDeptId())
+                .eq(ScheduleDepartment::getId, scheduleDeptId);
         int del = scheduleDeptMapper.delete(queryWrapper);
         if (del == 0) {
             throw new RuntimeException("删除部门日程表失败");
@@ -230,15 +277,16 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Result<?> updateScheduleDept(Long deptId, String scheduleTitle, String scheduleContent, Date beginTime, Date endTime) {
-        Calendar ca = Calendar.getInstance();
-        //设置时间为当前时间
-        ca.setTime(new Date());
-        ca.add(Calendar.DATE, -1);
-        // 获取当前时间
+    public Result<?> updateScheduleDept(Long scheduleDeptId,
+                                        String scheduleTitle,
+                                        String scheduleContent,
+                                        String beginTime,
+                                        String endTime) {
+        UserInfo userInfo = userInfoMapper.selectById(ThreadHolder.getCurrentUser().getId());
         Date dateNow = new Date();
         LambdaUpdateWrapper<ScheduleDepartment> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.eq(ScheduleDepartment::getDeptId, deptId)
+        updateWrapper.eq(ScheduleDepartment::getDeptId, userInfo.getDeptId())
+                .eq(ScheduleDepartment::getId, scheduleDeptId)
                 .set(ScheduleDepartment::getScheduleTitle, scheduleTitle)
                 .set(ScheduleDepartment::getScheduleContent, scheduleContent)
                 .set(ScheduleDepartment::getCreateTime, dateNow)
@@ -253,9 +301,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public Result<?> findScheduleDept(Long deptId) {
+    public Result<?> findScheduleDept() {
+        UserInfo userInfo = userInfoMapper.selectById(ThreadHolder.getCurrentUser().getId());
         LambdaQueryWrapper<ScheduleDepartment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ScheduleDepartment::getDeptId, deptId);
+        queryWrapper.eq(ScheduleDepartment::getDeptId, userInfo.getDeptId());
         List<ScheduleDepartment> list = scheduleDeptMapper.selectList(queryWrapper);
         return Result.ok(list);
     }

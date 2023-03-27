@@ -3,6 +3,7 @@ package com.ctgu.web.handler;
 import com.ctgu.common.exception.BizException;
 import com.ctgu.common.models.dto.Result;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -52,6 +53,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(BizException.class)
     public Result<?> handleBizException(BizException e) {
+        return Result.fail(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NotImplementedException.class)
+    public Result<?> handleNotImplementedException(NotImplementedException e) {
         return Result.fail(e.getMessage());
     }
 

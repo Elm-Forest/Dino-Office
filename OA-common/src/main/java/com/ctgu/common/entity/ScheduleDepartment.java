@@ -1,5 +1,6 @@
 package com.ctgu.common.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -24,8 +25,8 @@ public class ScheduleDepartment implements Serializable {
     /**
      * 主键
      */
-    @TableId(value = "id")
-    private Integer id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
     /**
      * 用户编号
@@ -55,13 +56,13 @@ public class ScheduleDepartment implements Serializable {
      * 开始时间
      */
     @TableField(value = "begin_time")
-    private Date beginTime;
+    private String beginTime;
 
     /**
      * 结束时间
      */
     @TableField(value = "end_time")
-    private Date endTime;
+    private String endTime;
 
     @Serial
     @TableField(exist = false)

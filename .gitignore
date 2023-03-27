@@ -39,3 +39,4 @@ application-pro.yml
 /OA-web/src/test/java/com/ctgu/web/
 /OA-web/src/test/
 /logs/
+*.log

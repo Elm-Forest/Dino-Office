@@ -1,6 +1,26 @@
 # AutoOffice - OA办公自动化
 
-> 这是一个学习项目，不适用于生产
+> 这是一个学习项目，不适用于生产，适合初学者练习和大学生课设
+
+前端仓库[Click Here](https://github.com/Elm-Forest/OA-vue)，开发ing，少部分尚未开发完成
+
+### 项目介绍
+
+<img src="https://github.com/Elm-Forest/AutoOffice/blob/master/.github/imgs/introduce.png?raw=true" width="35%" alt="" style="display: inline-block">
+
+### 技术栈
+
+springboot + mybatis-plus + shiro + jwt + websocket + redis + oss + druid + mysql
+
+### 构建注意
+
+JDK >=17
+
+```shell
+git clone https://github.com/Elm-Forest/AutoOffice.git
+cd ./AutoOffice/OA-web/src/main/resources
+# 此处修改或创建springboot配置文件 #
+```
 
 ### 系统架构
 
@@ -109,6 +129,7 @@
     <img src="https://github.com/Elm-Forest/AutoOffice/blob/master/.github/imgs/rights.png?raw=true" width="40%" alt="" style="display: inline-block">
 	<img src="https://github.com/Elm-Forest/AutoOffice/blob/master/.github/imgs/roles.png?raw=true" width="30%" alt="" style="display: inline-block">
 </div>
+
 ### 数据库设计
 
 <div>

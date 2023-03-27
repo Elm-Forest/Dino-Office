@@ -16,6 +16,7 @@ import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * 自定义Realm
  * @author Zhang Jinming
  * @create 7/6/2022 下午11:44
  */

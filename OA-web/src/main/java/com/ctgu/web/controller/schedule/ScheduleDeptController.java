@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
 
 /**
  * @author Li Zihan
@@ -22,26 +21,33 @@ public class ScheduleDeptController {
 
     @PostMapping("/dept")
     @ApiOperation(value = "添加部门日程表")
-    public Result<?> addScheduleDept(@RequestParam("deptId") Long deptId) {
-        return scheduleService.addScheduleDept(deptId);
+    public Result<?> addScheduleDept(@RequestParam("scheduleTitle") String scheduleTitle,
+                                     @RequestParam("scheduleContent") String scheduleContent,
+                                     @RequestParam("beginTime") String beginTime,
+                                     @RequestParam("endTime") String endTime) {
+        return scheduleService.addScheduleDept(scheduleTitle, scheduleContent, beginTime, endTime);
     }
 
     @DeleteMapping("/dept")
     @ApiOperation(value = "删除部门日程表")
-    public Result<?> delScheduleDept(@RequestParam("deptId") Long deptId) {
-        return scheduleService.delScheduleDept(deptId);
+    public Result<?> delScheduleDept(@RequestParam("scheduleDeptId") Long scheduleDeptId) {
+        return scheduleService.delScheduleDept(scheduleDeptId);
     }
 
     @PutMapping("/dept")
     @ApiOperation(value = "编辑部门日程表")
-    public Result<?> updateScheduleDept(@RequestParam("deptId") Long deptId, @RequestParam("scheduleTitle") String scheduleTitle, @RequestParam("scheduleContent") String scheduleContent, @RequestParam("beginTime") Date beginTime, @RequestParam("endTime") Date endTime) {
-        return scheduleService.updateScheduleDept(deptId, scheduleTitle, scheduleContent, beginTime, endTime);
+    public Result<?> updateScheduleDept(@RequestParam("scheduleDeptId") Long scheduleDeptId,
+                                        @RequestParam("scheduleTitle") String scheduleTitle,
+                                        @RequestParam("scheduleContent") String scheduleContent,
+                                        @RequestParam("beginTime") String beginTime,
+                                        @RequestParam("endTime") String endTime) {
+        return scheduleService.updateScheduleDept(scheduleDeptId, scheduleTitle, scheduleContent, beginTime, endTime);
     }
 
     @GetMapping("/dept")
-    @ApiOperation(value = "查看部门日程表")
-    public Result<?> findScheduleDept(@RequestParam("deptId") Long deptId) {
-        return scheduleService.findScheduleDept(deptId);
+    @ApiOperation(value = "查看所有部门日程表")
+    public Result<?> findScheduleDept() {
+        return scheduleService.findScheduleDept();
     }
 
 }

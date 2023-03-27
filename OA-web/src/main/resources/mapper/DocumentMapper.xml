@@ -15,42 +15,43 @@
                  LEFT JOIN USER u2 ON d.modify_id = u2.id
         WHERE recycle.delete_time IS NULL
           AND document.dept_id = #{deptId}
-
           AND document.file_path = #{filePath}
-
           AND d.id = document.id;
     </select>
     <select id="selectDocumentCondition" resultMap="document">
-        SELECT DISTINCT document.*,
+        SELECT DISTINCT
+        document.*,
         u1.username create_name,
-        u2.username modify_name
-        FROM document
-        LEFT JOIN recycle ON document.id = recycle.id,
-        user_info,
-        USER u1
-        RIGHT JOIN document d ON d.create_id = u1.id
-        LEFT JOIN USER u2 ON d.modify_id = u2.id
-        WHERE recycle.delete_time IS NULL
-        AND document.dept_id = 3
-        AND d.id = document.id
+        u2.username modify_name,
+        u1.role
+        FROM
+        document
+        LEFT JOIN recycle ON document.id = recycle.id
+        RIGHT JOIN USER u1 ON document.create_id = u1.id
+        LEFT JOIN USER u2 ON document.modify_id = u2.id
+        WHERE
+        recycle.delete_time IS NULL
+        AND document.dept_id = #{deptId}
+        AND document.file_path = #{filePath}
+        AND u1.id = document.create_id
         <if test="uName !=null and uName!=''">
             AND u2.username like concat('%', #{uName}, '%')
         </if>
         <if test="dName !=null and dName!=''">
             AND document.name like concat('%', #{dName}, '%')
         </if>
-        <if test="beginTime != null and endTime != null">
+        <if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
             AND document.modify_time BETWEEN #{beginTime} AND #{endTime}
         </if>
+        order by document.type desc,document.modify_time desc
     </select>
     <resultMap id="document" type="com.ctgu.common.models.dto.DocumentDTO">
         <id column="id" property="id"/>
         <result column="dept_id" property="deptId"/>
-        <result column="create_id" property="createId"/>
         <result column="create_name" property="createName"/>
-        <result column="modify_id" property="modifyId"/>
         <result column="modify_name" property="modifyName"/>
         <result column="name" property="name"/>
+        <result column="role" property="role"/>
         <result column="extension" property="extension"/>
         <result column="url" property="url"/>
         <result column="type" property="type"/>

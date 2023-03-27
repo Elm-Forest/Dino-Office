@@ -45,23 +45,13 @@ public class CheckServiceImpl implements CheckService {
     @Override
     public Result<?> signIn() throws ParseException {
         AttendanceRole fattendanceRole = attendanceRoleMapper.selectById(1L);
-        Calendar ca = Calendar.getInstance();
-        //设置时间为当前时间
-        ca.setTime(new Date());
-        ca.add(Calendar.DATE, -1);
-        // 获取当前时间
         Date dateNow = new Date();
-        //获取前一天时间
-        ca.getTime();
         User user = ThreadHolder.getCurrentUser();
         Long id = user.getId();
-        // SimpleDateFormat指定日期格式
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        // 时间
         Date beginTime = fattendanceRole.getStartTime();
         Date endTime = fattendanceRole.getBackTime();
         Date nowTime;
-        // 当前时间
         nowTime = simpleDateFormat.parse(simpleDateFormat.format(new Date()));
         if (getTime(beginTime, endTime)) {
             //添加考勤表
@@ -79,9 +69,7 @@ public class CheckServiceImpl implements CheckService {
                     .backTime(endTime)
                     .beginTime(nowTime)
                     .build();
-            System.out.println(attendanceRole);
             int insert2 = attendanceRoleMapper.insert(attendanceRole);
-            System.out.println(attendance);
             int insert = attendanceMapper.insert(attendance);
             if (insert == 0 || insert2 == 0) {
                 throw new RuntimeException("签到失败");
@@ -95,16 +83,9 @@ public class CheckServiceImpl implements CheckService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Result<?> signOut() throws ParseException {
-        Calendar ca = Calendar.getInstance();
-        // 格式化时间
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        //设置时间为当前时间
-        ca.setTime(new Date());
-        ca.add(Calendar.DATE, -1);
-        // 获取当前时间
         User user = ThreadHolder.getCurrentUser();
         Long id = user.getId();
-        // SimpleDateFormat指定日期格式
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // 时间
         Date nowTime;
@@ -165,7 +146,8 @@ public class CheckServiceImpl implements CheckService {
     @Override
     public Result<?> setHoliday(Date beginTime, Date endTime) {
         LambdaUpdateWrapper<IgnoreAttendanceTime> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.set(IgnoreAttendanceTime::getBeginTime, beginTime)
+        updateWrapper.eq(IgnoreAttendanceTime::getId,1L)
+                 .set(IgnoreAttendanceTime::getBeginTime, beginTime)
                 .set(IgnoreAttendanceTime::getEndTime, endTime);
         IgnoreAttendanceTime iat = new IgnoreAttendanceTime();
         int result = iatMapper.update(iat, updateWrapper);

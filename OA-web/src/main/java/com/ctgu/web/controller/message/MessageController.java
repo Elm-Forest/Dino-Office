@@ -6,7 +6,7 @@ import com.ctgu.common.models.dto.Result;
 import com.ctgu.common.models.vo.MessageConditionVO;
 import com.ctgu.common.models.vo.MessageVO;
 import com.ctgu.common.utils.ThreadHolder;
-import com.ctgu.message.service.core.MessageServiceCore;
+import com.ctgu.message.service.MessageServiceCore;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +29,7 @@ public class MessageController {
     //用户查看所有自己编写的但是没有发送的消息
     @GetMapping("/anrmessagebs")
     public Result<PageResult<Message>> getAllNotReleaseMessageBySendUserId(Integer current, Integer size) {
-        Long id = ThreadHolder.getCurrentUser().getId();
-        return messageServiceCore.getAllNotReleaseMessageBySendUserId(id, current, size);
+        return messageServiceCore.getAllNotReleaseMessageBySendUserId(current, size);
     }
 
     //用户查看所有自己编写的已发送的消息
@@ -50,8 +49,8 @@ public class MessageController {
     //用户保存消息，仅仅是保存，不发送，就是把消息的状态写成0，未发送
     //这个时候虽然也会设置过期时间但是并不会生效，过期时间只会对已发送的消息生效
     @PostMapping("/save")
-    public Result<Boolean> insertMessageNotRelease(MessageVO messageVO) {
-        return messageServiceCore.insertMessageNotRelease(messageVO);
+    public Result<Boolean> saveMessage(MessageVO messageVO) {
+        return messageServiceCore.saveMessage(messageVO);
     }
 
     //用户发送消息，这个是发送消息，设置发送状态为1，已发送
