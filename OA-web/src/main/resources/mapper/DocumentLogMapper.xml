@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ctgu.common.dao.document.DocumentLogMapper">
+<mapper namespace="com.dino.common.dao.document.DocumentLogMapper">
     <select id="selectDocumentLog" resultMap="document">
         SELECT
         document.*,
@@ -37,7 +37,7 @@
         document_log.operation_time
         order by document_log.operation_time desc
     </select>
-    <resultMap id="document" type="com.ctgu.common.models.dto.DocLogDTO">
+    <resultMap id="document" type="com.dino.common.models.dto.DocLogDTO">
         <id column="id" property="id"/>
         <result column="u_name" property="modifyName"/>
         <result column="name" property="name"/>

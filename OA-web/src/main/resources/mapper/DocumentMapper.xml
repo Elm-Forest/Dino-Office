@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ctgu.common.dao.document.DocumentMapper">
+<mapper namespace="com.dino.common.dao.document.DocumentMapper">
     <select id="selectDocument" resultMap="document">
         SELECT DISTINCT document.*,
                         u1.username create_name,
@@ -45,7 +45,7 @@
         </if>
         order by document.type desc,document.modify_time desc
     </select>
-    <resultMap id="document" type="com.ctgu.common.models.dto.DocumentDTO">
+    <resultMap id="document" type="com.dino.common.models.dto.DocumentDTO">
         <id column="id" property="id"/>
         <result column="dept_id" property="deptId"/>
         <result column="create_name" property="createName"/>

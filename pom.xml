@@ -9,9 +9,9 @@
         <relativePath/>
     </parent>
     <groupId>com.ctgu</groupId>
-    <artifactId>AutoOffice</artifactId>
+    <artifactId>Dino-Office</artifactId>
     <version>0.0.1</version>
-    <name>AutoOffice</name>
+    <name>DINO</name>
     <description>办公自动化</description>
     <packaging>pom</packaging>
 
@@ -23,9 +23,11 @@
         <module>OA-user</module>
         <module>OA-department</module>
         <module>OA-message</module>
+        <module>OA-mail</module>
         <module>OA-schedule</module>
         <module>OA-document</module>
         <module>OA-checking</module>
+        <module>OA-socket</module>
     </modules>
     <properties>
         <java.version>17</java.version>
@@ -63,6 +65,11 @@
             </dependency>
             <dependency>
                 <groupId>com.ctgu</groupId>
+                <artifactId>OA-mail</artifactId>
+                <version>${oa.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ctgu</groupId>
                 <artifactId>OA-department</artifactId>
                 <version>${oa.version}</version>
             </dependency>
@@ -84,6 +91,11 @@
             <dependency>
                 <groupId>com.ctgu</groupId>
                 <artifactId>OA-checking</artifactId>
+                <version>${oa.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ctgu</groupId>
+                <artifactId>OA-socket</artifactId>
                 <version>${oa.version}</version>
             </dependency>
             <dependency>
@@ -218,9 +230,8 @@
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
-                <version>5.8.11</version>
+                <version>5.8.20</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
             <dependency>
                 <groupId>org.modelmapper</groupId>
                 <artifactId>modelmapper</artifactId>

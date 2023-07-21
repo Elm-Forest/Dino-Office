@@ -53,47 +53,47 @@
 
 
     <!-- 按照每天及大小生成日志文件 -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!--日志文件输出的文件名-->
-            <FileNamePattern>${LOG_PATH}/my-blog-site.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
-            <!--日志文件最大大小-->
-            <maxFileSize>100MB</maxFileSize>
-            <!--日志文件保留天数-->
-            <maxHistory>30</maxHistory>
-        </rollingPolicy>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>${FILE_LOG_PATTERN}</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-        <!-- 过滤级别,
-            如果想分类生成日志文件的话(分成debug、info、error等三个日志文件, 每个文件只记录自己级别的日志),
-            1. 直接把这个 <appender> 复制三分改一下 FileNamePattern 和 name.
-            2. 把 <filter> 注释去掉改一下 level 就可以了
-        -->
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>info</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>warn</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>error</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-    </appender>
+<!--    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">-->
+<!--            &lt;!&ndash;日志文件输出的文件名&ndash;&gt;-->
+<!--            <FileNamePattern>${LOG_PATH}/my-blog-site.%d{yyyy-MM-dd}.%i.log</FileNamePattern>-->
+<!--            &lt;!&ndash;日志文件最大大小&ndash;&gt;-->
+<!--            <maxFileSize>100MB</maxFileSize>-->
+<!--            &lt;!&ndash;日志文件保留天数&ndash;&gt;-->
+<!--            <maxHistory>30</maxHistory>-->
+<!--        </rollingPolicy>-->
+<!--        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
+<!--            <pattern>${FILE_LOG_PATTERN}</pattern>-->
+<!--            <charset>UTF-8</charset>-->
+<!--        </encoder>-->
+<!--        &lt;!&ndash; 过滤级别,-->
+<!--            如果想分类生成日志文件的话(分成debug、info、error等三个日志文件, 每个文件只记录自己级别的日志),-->
+<!--            1. 直接把这个 <appender> 复制三分改一下 FileNamePattern 和 name.-->
+<!--            2. 把 <filter> 注释去掉改一下 level 就可以了-->
+<!--        &ndash;&gt;-->
+<!--        <filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+<!--            <level>info</level>-->
+<!--            <onMatch>ACCEPT</onMatch>-->
+<!--            <onMismatch>DENY</onMismatch>-->
+<!--        </filter>-->
+<!--        <filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+<!--            <level>warn</level>-->
+<!--            <onMatch>ACCEPT</onMatch>-->
+<!--            <onMismatch>DENY</onMismatch>-->
+<!--        </filter>-->
+<!--        <filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+<!--            <level>error</level>-->
+<!--            <onMatch>ACCEPT</onMatch>-->
+<!--            <onMismatch>DENY</onMismatch>-->
+<!--        </filter>-->
+<!--    </appender>-->
 
 
     <!-- 日志输出级别
         如果使用springProfile, 就需要在application配置文件中通过 spring.profiles.active=dev 来指定环境,
         也可以直接去掉 <springProfile> 这个标签或者把它整个注释掉
      -->
-    <springProfile name="dev,prod">
+    <springProfile name="dev">
         <logger name="org.springframework" level="INFO" additivity="true">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
@@ -133,8 +133,47 @@
         </logger>
     </springProfile>
 
+    <springProfile name="prod">
+        <logger name="org.springframework" level="INFO" additivity="true">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+        <logger name="org.springframework" level="WARN" additivity="true">
+            <appender-ref ref="WARN"/>
+
+        </logger>
+        <logger name="org.springframework" level="ERROR" additivity="false">
+            <appender-ref ref="WARN"/>
+
+        </logger>
+        <logger name="com.netflix" level="INFO" additivity="true">
+            <appender-ref ref="CONSOLE"/>
+
+        </logger>
+        <logger name="com.netflix" level="WARN" additivity="true">
+            <appender-ref ref="WARN"/>
+
+        </logger>
+        <logger name="com.netflix" level="ERROR" additivity="false">
+            <appender-ref ref="WARN"/>
+
+        </logger>
+        <logger name="com.pro.test" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+
+        </logger>
+        <logger name="java.sql" level="DEBUG" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+
+        </logger>
+        <!--项目包的路径-->
+        <logger name="com.pro" level="DEBUG,INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+
+        </logger>
+    </springProfile>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
+<!--        <appender-ref ref="FILE"/>-->
     </root>
 </configuration>

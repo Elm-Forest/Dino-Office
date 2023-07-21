@@ -1,51 +1,73 @@
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : AutoOffice
+ Source Server Type    : MySQL
+ Source Server Version : 80025
+ Source Host           : rm-bp1an2pw3q2n3ca74do.mysql.rds.aliyuncs.com:3306
+ Source Schema         : autooffice
+
+ Target Server Type    : MySQL
+ Target Server Version : 80025
+ File Encoding         : 65001
+
+ Date: 21/07/2023 16:16:11
+*/
+
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for attendance
+-- Table structure for apply
 -- ----------------------------
-DROP TABLE IF EXISTS `attendance`;
-CREATE TABLE `attendance`  (
-  `id` int NOT NULL COMMENT '主键',
-  `attendance_time` date NOT NULL COMMENT '考勤时间',
-  `user_Id` bigint NOT NULL COMMENT '考勤用户编号',
-  `sign_in` int NULL DEFAULT 0 COMMENT '是否签到(1-已签到，0-未签到)',
-  `sign_back` int NULL DEFAULT 0 COMMENT '是否签退(1-已签退，0-未签退)',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '出勤表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for attendance_role
--- ----------------------------
-DROP TABLE IF EXISTS `attendance_role`;
-CREATE TABLE `attendance_role`  (
-  `id` int NOT NULL COMMENT '主键',
-  `start_time` datetime NOT NULL COMMENT '规定上班时间',
-  `back_time` datetime NOT NULL COMMENT '规定下班时间',
-  `begin_time` datetime NOT NULL COMMENT '签到实际时间',
-  `end_time` datetime NULL DEFAULT NULL COMMENT '签退实际时间',
+DROP TABLE IF EXISTS `apply`;
+CREATE TABLE `apply`  (
+  `id` bigint NOT NULL,
   `user_id` bigint NOT NULL,
-  `attendance_time` date NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `user_id_b`(`user_id`) USING BTREE,
-  CONSTRAINT `user_id_b` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '出勤规则表' ROW_FORMAT = Dynamic;
+  `apply_start_time` datetime NOT NULL,
+  `apply_end_time` datetime NOT NULL,
+  `type` int NOT NULL COMMENT '0-补卡 1-请假',
+  `apply_des` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for attendance_statistics
+-- Table structure for chat
 -- ----------------------------
-DROP TABLE IF EXISTS `attendance_statistics`;
-CREATE TABLE `attendance_statistics`  (
-  `id` int NOT NULL COMMENT '主键',
-  `user_id` bigint NOT NULL COMMENT '用户编号',
-  `attendance` double NULL DEFAULT NULL COMMENT '出勤率',
-  `late_count` int NULL DEFAULT NULL COMMENT '迟到次数',
-  `early_count` int NULL DEFAULT NULL COMMENT '早退次数',
-  `absenteeism_count` int NULL DEFAULT NULL COMMENT '旷工次数',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `userid_statistics`(`user_id`) USING BTREE,
-  CONSTRAINT `userid_statistics` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '出勤统计表' ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `chat`;
+CREATE TABLE `chat`  (
+  `id` bigint NOT NULL,
+  `su_id` bigint NOT NULL,
+  `au_id` bigint NOT NULL,
+  `time` datetime NOT NULL,
+  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for check_list
+-- ----------------------------
+DROP TABLE IF EXISTS `check_list`;
+CREATE TABLE `check_list`  (
+  `id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
+  `check_rule_id` bigint NOT NULL,
+  `type` int NOT NULL COMMENT '0-缺勤 1-签到 2-签退 3-请假',
+  `time` datetime NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for check_rule
+-- ----------------------------
+DROP TABLE IF EXISTS `check_rule`;
+CREATE TABLE `check_rule`  (
+  `id` bigint NOT NULL,
+  `department_id` bigint NOT NULL,
+  `start_time` datetime NULL DEFAULT NULL,
+  `end_time` datetime NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for department
@@ -95,7 +117,7 @@ CREATE TABLE `document_log`  (
   `operation` int NOT NULL COMMENT '1-添加，2-修改，3-删除，4-恢复，5-彻底删除',
   `operation_time` datetime NOT NULL COMMENT '操作时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 285 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '文件操作日志表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 326 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '文件操作日志表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for email
@@ -130,7 +152,7 @@ CREATE TABLE `email_account`  (
   `port` int NOT NULL DEFAULT 465 COMMENT '端口',
   `protocol` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '协议',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1624814457748316162 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '邮箱账户表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1680110347464806403 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '邮箱账户表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for friends
@@ -140,6 +162,7 @@ CREATE TABLE `friends`  (
   `id` bigint NOT NULL COMMENT '主键',
   `user_id` bigint NOT NULL COMMENT '用户ID',
   `friend_id` bigint NOT NULL COMMENT '用户联系人ID',
+  `status` tinyint NOT NULL DEFAULT 0 COMMENT '朋友状态：0等待同意，1接受，2拒绝（删除）',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `user_id_e`(`user_id`) USING BTREE,
   INDEX `friend_id_s`(`friend_id`) USING BTREE,
@@ -148,29 +171,27 @@ CREATE TABLE `friends`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '联系人表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for ignore_attendance_time
+-- Table structure for gpt
 -- ----------------------------
-DROP TABLE IF EXISTS `ignore_attendance_time`;
-CREATE TABLE `ignore_attendance_time`  (
-  `id` int NOT NULL COMMENT '主键',
-  `begin_time` date NOT NULL COMMENT '开始时间',
-  `end_time` date NOT NULL COMMENT '结束时间(这段时间内不用签到签退)',
+DROP TABLE IF EXISTS `gpt`;
+CREATE TABLE `gpt`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` bigint NOT NULL,
+  `session_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单次对话的id',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `session_content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+  `time` datetime NULL DEFAULT NULL COMMENT '会话创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '出勤忽略时间表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 49 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for ignore_attendance_user
+-- Table structure for gpt_chat
 -- ----------------------------
-DROP TABLE IF EXISTS `ignore_attendance_user`;
-CREATE TABLE `ignore_attendance_user`  (
-  `id` int NOT NULL COMMENT '主键',
-  `user_id` bigint NOT NULL COMMENT '用户编号',
-  `begin_time` date NOT NULL COMMENT '开始时间',
-  `end_time` date NOT NULL COMMENT '结束时间(在这段时间里面此用户不用考勤)',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `user_id`(`user_id`) USING BTREE,
-  CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '出勤忽略人表' ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `gpt_chat`;
+CREATE TABLE `gpt_chat`  (
+  `session_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `chat_id` bigint NOT NULL
+) ENGINE = InnoDB AUTO_INCREMENT = 209 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for message
@@ -200,7 +221,8 @@ DROP TABLE IF EXISTS `note`;
 CREATE TABLE `note`  (
   `id` bigint NOT NULL COMMENT 'id',
   `user_id` bigint NOT NULL COMMENT '用户id',
-  `note_content` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '便签主题',
+  `note_content` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '便签内容',
+  `note_title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '便签标题',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `user_id_a`(`user_id`) USING BTREE,
   CONSTRAINT `user_id_a` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
@@ -216,7 +238,7 @@ CREATE TABLE `recycle`  (
   `delete_time` datetime NOT NULL COMMENT '删除时间',
   `status` tinyint NOT NULL DEFAULT 1 COMMENT '移除标识',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1625085362441334787 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '回收站' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1681837440614031362 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '回收站' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for role
@@ -236,15 +258,15 @@ DROP TABLE IF EXISTS `schedule_arrange`;
 CREATE TABLE `schedule_arrange`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `user_id` bigint NOT NULL COMMENT '用户编号',
-  `schedule_title` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '日程标题',
-  `schedule_content` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '日程内容',
+  `schedule_title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '日程标题',
+  `schedule_content` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '日程内容',
   `create_time` datetime NOT NULL COMMENT '创建时间',
-  `begin_time` datetime NULL DEFAULT NULL COMMENT '开始时间',
-  `end_time` datetime NULL DEFAULT NULL COMMENT '结束时间',
+  `start_time` datetime NOT NULL COMMENT '开始时间',
+  `end_time` datetime NOT NULL COMMENT '结束时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `user_id_s`(`user_id`) USING BTREE,
   CONSTRAINT `user_id_s` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1631588377 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '个人日程表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1631588397 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '个人日程表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for schedule_department
@@ -256,12 +278,12 @@ CREATE TABLE `schedule_department`  (
   `schedule_title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '日程标题',
   `schedule_content` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '日程信息',
   `create_time` date NOT NULL COMMENT '创建时间',
-  `begin_time` date NULL DEFAULT NULL COMMENT '开始时间',
+  `start_time` date NULL DEFAULT NULL COMMENT '开始时间',
   `end_time` date NULL DEFAULT NULL COMMENT '结束时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `dept_id_s`(`dept_id`) USING BTREE,
   CONSTRAINT `dept_id_s` FOREIGN KEY (`dept_id`) REFERENCES `department` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '企业日程表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '企业日程表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for user
@@ -296,33 +318,5 @@ CREATE TABLE `user_info`  (
   `status` tinyint NULL DEFAULT 0 COMMENT '入职状态;0:未入职;1:已入职;2:已解聘',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户详细信息表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Event structure for 更新上班时间
--- ----------------------------
-DROP EVENT IF EXISTS `更新上班时间`;
-delimiter ;;
-CREATE EVENT `更新上班时间`
-ON SCHEDULE
-EVERY '1' DAY STARTS '2022-08-21 08:30:00'
-DO begin
-UPDATE `attendance_role` SET `start_time` = NOW() WHERE `id` = '1';
-end
-;;
-delimiter ;
-
--- ----------------------------
--- Event structure for 更新下班时间
--- ----------------------------
-DROP EVENT IF EXISTS `更新下班时间`;
-delimiter ;;
-CREATE EVENT `更新下班时间`
-ON SCHEDULE
-EVERY '1' DAY STARTS '2022-08-21 19:41:00'
-DO begin
-UPDATE `attendance_role` SET `back_time` = NOW() WHERE `id` = '1';
-end
-;;
-delimiter ;
 
 SET FOREIGN_KEY_CHECKS = 1;

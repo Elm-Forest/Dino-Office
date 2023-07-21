@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.ctgu</groupId>
-        <artifactId>AutoOffice</artifactId>
+        <artifactId>Dino-Office</artifactId>
         <version>0.0.1</version>
     </parent>
     <artifactId>OA-department</artifactId>
