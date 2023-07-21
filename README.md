@@ -6,7 +6,7 @@
 
 ### 项目介绍
 
-<img src="https://github.com/Elm-Forest/Dino-Office/blob/master/.github/imgs/introduce.png?raw=true" width="75%" alt="" style="display: inline-block">
+<img src="https://github.com/Elm-Forest/Dino-Office/blob/master/.github/imgs/introduce.png?raw=true" width="80%" alt="" style="display: inline-block">
 
 ### 技术栈
 
@@ -14,7 +14,7 @@ springboot + mybatis-plus + shiro + jwt + websocket + redis + oss + druid + mysq
 
 ### 构建注意
 
-JDK >=17
+JDK >= 17
 
 ```shell
 git clone https://github.com/Elm-Forest/Dino-Office.git
@@ -25,8 +25,8 @@ cd ./Dino-Office/OA-web/src/main/resources
 ### 系统架构
 
 <div>
-    <img src="https://github.com/Elm-Forest/Dino-Office/blob/master/.github/imgs/core.png?raw=true" width="35%" alt="" style="display: inline-block">
-	<img src="https://github.com/Elm-Forest/Dino-Office/blob/master/.github/imgs/structure.png?raw=true" width="50%" alt="" style="display: inline-block">
+    <img src="https://github.com/Elm-Forest/Dino-Office/blob/master/.github/imgs/core.png?raw=true" width="30%" alt="" style="display: inline-block">
+	<img src="https://github.com/Elm-Forest/Dino-Office/blob/master/.github/imgs/structure.png?raw=true" width="55%" alt="" style="display: inline-block">
 </div>
 
 ### 需求文档
