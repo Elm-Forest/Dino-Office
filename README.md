@@ -1,6 +1,6 @@
 # Dino-Office - OA办公自动化平台
 
-> 这是一个学习项目，不适用于生产，适合初学者练习和大学生课设
+> 这是一个学习项目，不适用于生产，适合初学者参考或大学生毕设课设
 
 前端仓库[Click Here](https://github.com/Elm-Forest/OA-vue)
 
@@ -11,6 +11,10 @@
 ### 技术栈
 
 springboot + mybatis-plus + shiro + jwt + websocket + redis + oss + druid + mysql
+
+### API文档
+
+[Apifox](https://apifox.com/apidoc/shared-6431cbf6-65c9-4713-9464-71acdb12925a)
 
 ### 构建注意
 
