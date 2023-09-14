@@ -17,7 +17,7 @@ springboot + mybatis-plus + shiro + jwt + websocket + redis + oss + druid + mysq
 [Apifox](https://apifox.com/apidoc/shared-6431cbf6-65c9-4713-9464-71acdb12925a)
 
 ### CI/CD指南
-[使用GitHub Action自动构建与部署项目](https://github.com/Elm-Forest/Dino-Office.wiki.git)
+[使用GitHub Action自动构建与部署项目](https://github.com/Elm-Forest/Dino-Office/wiki)
 
 ### 构建注意
 
